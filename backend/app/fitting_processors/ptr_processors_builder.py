@@ -51,3 +51,7 @@ class FittingProcessorBuilder:
         self._processor.set_phase_units("rad")
         return self
 
+    def apply_phase_correction(self, delta_deg: float) -> 'FittingProcessorBuilder':
+        self._processor._phase_correction = delta_deg
+        return self
+

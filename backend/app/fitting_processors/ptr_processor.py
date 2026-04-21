@@ -1,3 +1,5 @@
+import numpy as np
+
 from app.methods.fit_ptr import fit_ptr
 from app.models.ptr_config import PTRConfig
 from app.models.ptr_data import PTRData
@@ -11,9 +13,13 @@ class PTRProcessor:
         self._config: PTRConfig = None
         self._phase_units: str = "auto"
 
+        # Methods
+        self._phase_correction: float = 0.0
+
 
     def process(self) -> PTRFitResult:
-      return self.build_and_fit()
+        self.apply_phase_correction()
+        return self.build_and_fit()
 
     def load_data(self, data: PTRData) -> 'PTRProcessor':
         self._data = data
@@ -28,6 +34,13 @@ class PTRProcessor:
             raise ValueError(f"Invalid phase_units: {units}. Must be 'auto', 'deg' or 'rad'.")
         self._phase_units = units
         return self
+
+    def apply_phase_correction(self):
+        if self._phase_correction != 0.0:
+            if self._phase_units == "rad":
+                self._data.phase = self._data.phase + np.deg2rad(self._phase_correction)
+            else:
+                self._data.phase_deg = self._data.phase_deg + self._phase_correction
 
     def build_and_fit(self) -> PTRFitResult:
 

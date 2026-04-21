@@ -22,6 +22,7 @@ print("Starting PTR data processing...\n")
 result = (FittingProcessorBuilder()
           .load_dat_file("data/32B.dat", sample_name="X32B")   # ← CHANGE filename and sample name
           .load_config(config)
+          .apply_phase_correction(45)
           .build().process())
 
 # ============================== 3. PRINT FIT RESULTS ==============================

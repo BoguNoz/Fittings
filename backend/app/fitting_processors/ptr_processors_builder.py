@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import numpy as np
-from typing import Tuple
 
 from app.fitting_processors.ptr_processor import PTRProcessor
 from app.models.ptr_config import PTRConfig
@@ -41,14 +40,6 @@ class FittingProcessorBuilder:
 
     def load_config(self, config: PTRConfig) -> 'FittingProcessorBuilder':
         self._processor.set_config(config)
-        return self
-
-    def use_deg(self) -> 'FittingProcessorBuilder':
-        self._processor.set_phase_units("deg")
-        return self
-
-    def use_rad(self) -> 'FittingProcessorBuilder':
-        self._processor.set_phase_units("rad")
         return self
 
     def apply_phase_correction(self, delta_deg: float) -> 'FittingProcessorBuilder':

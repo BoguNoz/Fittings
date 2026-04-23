@@ -29,18 +29,8 @@ class PTRProcessor:
         self._config = config
         return self
 
-    def set_phase_units(self, units: str) -> 'PTRProcessor':
-        if units not in ("auto", "deg", "rad"):
-            raise ValueError(f"Invalid phase_units: {units}. Must be 'auto', 'deg' or 'rad'.")
-        self._phase_units = units
-        return self
-
     def apply_phase_correction(self):
-        if self._phase_correction != 0.0:
-            if self._phase_units == "rad":
-                self._data.phase = self._data.phase + np.deg2rad(self._phase_correction)
-            else:
-                self._data.phase_deg = self._data.phase_deg + self._phase_correction
+        return self
 
     def build_and_fit(self) -> PTRFitResult:
 

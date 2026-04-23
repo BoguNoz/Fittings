@@ -44,4 +44,4 @@ def ptr_residual(
     diff = (y_norm - e_norm) / np.maximum(np.abs(e_norm), 1e-12)
     diff = diff * weight
 
-    return np.concatenate([np.real(diff), np.imag(diff)])
+    return np.concatenate([np.real(diff), np.imag(diff) * 5.0])

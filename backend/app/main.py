@@ -9,7 +9,12 @@ from app.models.ptr_config import PTRConfig
 # Set the main ZnO layer thickness here (obtained from RBS analysis)
 # Change this value according to your sample (in nanometers)
 config = PTRConfig(
-    l2=469.5e-9,        # Thickness of main ZnO layer in meters
+    l2=240e-9, #469.5e-9,        # Thickness of main ZnO layer in meters
+    k1=0.2,
+    l1=80e-9,
+    alfa1=8.9e-6,
+    alfa3=6.0e-6,
+    r21=2.8e-8
     # Other parameters can be adjusted if needed:
     # k1=21.0, l1=80e-9, alfa1=8.9e-6, alfa3=6.0e-6, r21=2.8e-8
 )

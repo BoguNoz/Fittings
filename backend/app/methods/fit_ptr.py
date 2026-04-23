@@ -7,84 +7,54 @@ from app.models.ptr_fit_result import PTRFitResult
 
 
 def fit_ptr(
-    frequency_vector: np.ndarray,
-    exp_amp: np.ndarray,
-    exp_phase: np.ndarray,
-    phase_units: str = "auto",
-
-    l2: float = 469e-9,
-    k1: float = 21.0,
-    l1: float = 80e-9,
-    alfa1: float = 8.9e-6,
-    alfa3: float = 6.0e-6,
-    r21: float = 2.8e-8,
+        frequency_vector: np.ndarray,
+        exp_amp: np.ndarray,
+        exp_phase: np.ndarray,
+        phase_units: str = "auto",
+        **phys_params
 ) -> PTRFitResult:
     """
-    Main fitting routine for Photothermal Radiometry (PTR) amplitude and phase data.
-
-    Automatically selects best phase units ('deg' or 'rad') when phase_units="auto".
-
-    Parameters
-    ----------
-    frequency_vector : np.ndarray
-        Frequencies in Hz.
-    exp_amp : np.ndarray
-        Experimental amplitude.
-    exp_phase : np.ndarray
-        Experimental phase.
-    phase_units : str, default="auto"
-        'deg', 'rad' or 'auto'.
-    l2 : float, default=469e-9
-        Thickness of the main ZnO film (Layer 2). Should come from RBS fitting_processors.
-
-    Returns
-    -------
-    PTRFitResult
-        Dataclass containing fitted parameters and model curves.
+    Main fitting routine for PTR amplitude and phase data.
+    Automatically detects if experimental phase is in degrees or radians.
     """
-    # Initial guess and bounds [log10(k2), log10(alfa2), log10(r32), log10(k3), phi0_deg]
+    # Initial guess and bounds in log10 scale
     p0 = np.array([np.log10(0.5), np.log10(3e-7), np.log10(1e-7), np.log10(3.0), 0.0])
-
     lb = np.array([np.log10(1e-3), np.log10(1e-10), np.log10(1e-10), np.log10(0.1), -360.0])
-    ub = np.array([np.log10(1e2),  np.log10(1e-4), np.log10(1e-4), np.log10(20.0),  360.0])
+    ub = np.array([np.log10(1e2), np.log10(1e-4), np.log10(1e-4), np.log10(20.0), 360.0])
 
+    # Run optimization for both degree and radian assumptions if "auto"
     if phase_units.lower() == "auto":
         res_deg = least_squares(ptr_residual, p0, bounds=(lb, ub),
-                                args=(frequency_vector, exp_amp, exp_phase, "deg"))
+                                args=(frequency_vector, exp_amp, exp_phase, "deg"),
+                                kwargs=phys_params)
         res_rad = least_squares(ptr_residual, p0, bounds=(lb, ub),
-                                args=(frequency_vector, exp_amp, exp_phase, "rad"))
+                                args=(frequency_vector, exp_amp, exp_phase, "rad"),
+                                kwargs=phys_params)
 
-        res = res_deg if res_deg.cost <= res_rad.cost else res_rad
-        used_units = "deg" if res_deg.cost <= res_rad.cost else "rad"
+        if res_deg.cost <= res_rad.cost:
+            res, used_units = res_deg, "deg"
+        else:
+            res, used_units = res_rad, "rad"
     else:
-        res = least_squares(ptr_residual, p0, bounds=(lb, ub),
-                            args=(frequency_vector, exp_amp, exp_phase, phase_units.lower()))
         used_units = phase_units.lower()
+        res = least_squares(ptr_residual, p0, bounds=(lb, ub),
+                            args=(frequency_vector, exp_amp, exp_phase, used_units),
+                            kwargs=phys_params)
 
+    # Convert fitted parameters back to physical scale
     pfit = res.x
+    k2, alfa2, r32, k3, phi0_deg = 10 ** pfit[0], 10 ** pfit[1], 10 ** pfit[2], 10 ** pfit[3], pfit[4]
 
-    # Convert back to physical units
-    k2 = 10 ** pfit[0]
-    alfa2 = 10 ** pfit[1]
-    r32 = 10 ** pfit[2]
-    k3 = 10 ** pfit[3]
-    phi0_deg = pfit[4]
+    # Generate final model curves
+    _, y_complex = simulations_ptr(frequency_vector, k2, alfa2, r32, k3, **phys_params)
+    y_norm = (y_complex / y_complex[0]) * np.exp(1j * np.deg2rad(phi0_deg))
 
-    # Compute best-fit model
-    _, y_complex = simulations_ptr(frequency_vector, k2, alfa2, r32, k3, l2=l2, k1=k1, alfa1=alfa1, alfa3=alfa3, l1=l1, r21=r21)
-
-    y_normalized = (y_complex / y_complex[0]) * np.exp(1j * np.deg2rad(phi0_deg))
-
-    model_amp = np.abs(y_normalized)
-    model_phase_deg = np.unwrap(np.angle(y_normalized)) * 180 / np.pi
+    model_amp = np.abs(y_norm)
+    model_phase_deg = np.unwrap(np.angle(y_norm)) * 180 / np.pi
 
     # Prepare experimental phase for consistent plotting
-    if used_units == "deg":
-        exp_phase_plot = exp_phase
-    else:
-        exp_phase_plot = np.rad2deg(exp_phase)
-
-    exp_phase_plot = np.unwrap(np.deg2rad(exp_phase_plot)) * 180 / np.pi
+    exp_phase_deg = exp_phase if used_units == "deg" else np.rad2deg(exp_phase)
+    exp_phase_deg_plot = np.unwrap(np.deg2rad(exp_phase_deg)) * 180 / np.pi
 
     return PTRFitResult(
         k2=k2,
@@ -92,13 +62,13 @@ def fit_ptr(
         r32=r32,
         k3=k3,
         phi0_deg=phi0_deg,
-        res_norm=2 * res.cost,                    # sum of squared weighted residuals
+        res_norm=2 * res.cost,
         model_amp=model_amp,
         model_phase_deg=model_phase_deg,
-        exp_phase_deg=exp_phase_plot,
+        exp_phase_deg=exp_phase_deg_plot,
         phase_units=used_units,
         pfit=pfit,
         exit_flag=res.status,
         frequency_vector=frequency_vector,
-        l2=l2                                     # save used thickness
+        l2=phys_params.get('l2', 469e-9)
     )

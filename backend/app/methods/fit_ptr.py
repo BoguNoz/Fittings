@@ -12,7 +12,7 @@ def fit_ptr(
         exp_amp: np.ndarray,
         exp_phase: np.ndarray,
         phase_units: str = "auto",
-        use_hankel: bool = False,
+        use_hankel: bool = True,
         **phys_params
 ) -> PTRFitResult:
     """

@@ -3,6 +3,7 @@ from scipy.optimize import least_squares
 
 from app.methods.ptr_residual import ptr_residual
 from app.methods.simulations_ptr import simulations_ptr
+from app.methods.simulations_ptr_hankel import simulations_ptr_hankel
 from app.models.ptr_fit_result import PTRFitResult # Upewnij się, że ten import działa
 
 
@@ -11,6 +12,7 @@ def fit_ptr(
         exp_amp: np.ndarray,
         exp_phase: np.ndarray,
         phase_units: str = "auto",
+        use_hankel: bool = False,
         **phys_params
 ) -> PTRFitResult:
     """
@@ -30,10 +32,10 @@ def fit_ptr(
     used_units = phase_units.lower()
     if used_units == "auto":
         res_deg = least_squares(ptr_residual, p0, bounds=(lb, ub),
-                                args=(frequency_vector, exp_amp, exp_phase, "deg"),
+                                args=(frequency_vector, exp_amp, exp_phase, "deg", use_hankel),
                                 kwargs=phys_params)
         res_rad = least_squares(ptr_residual, p0, bounds=(lb, ub),
-                                args=(frequency_vector, exp_amp, exp_phase, "rad"),
+                                args=(frequency_vector, exp_amp, exp_phase, "rad", use_hankel),
                                 kwargs=phys_params)
 
         if res_deg.cost <= res_rad.cost:
@@ -42,7 +44,7 @@ def fit_ptr(
             res, used_units = res_rad, "rad"
     else:
         res = least_squares(ptr_residual, p0, bounds=(lb, ub),
-                            args=(frequency_vector, exp_amp, exp_phase, used_units),
+                            args=(frequency_vector, exp_amp, exp_phase, used_units, use_hankel),
                             kwargs=phys_params)
 
     # --- Post-processing and Result Extraction ---
@@ -51,7 +53,10 @@ def fit_ptr(
     phi0_deg = pfit[4]
 
     # Generate final model response for visualization
-    _, y_complex = simulations_ptr(frequency_vector, k2, alfa2, r32, k3, **phys_params)
+    if use_hankel:
+        _, y_complex = simulations_ptr_hankel(frequency_vector, k2, alfa2, r32, k3, **phys_params)
+    else:
+        _, y_complex = simulations_ptr(frequency_vector, k2, alfa2, r32, k3, **phys_params)
 
     # Model: Normalized to (1+0j) at f[0], then rotated by phi0
     y_model_final = (y_complex / y_complex[0]) * np.exp(1j * np.deg2rad(phi0_deg))

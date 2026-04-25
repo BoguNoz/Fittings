@@ -1,6 +1,7 @@
 import numpy as np
 
 from app.methods.simulations_ptr import simulations_ptr
+from app.methods.simulations_ptr_hankel import simulations_ptr_hankel
 
 
 def ptr_residual(
@@ -9,6 +10,7 @@ def ptr_residual(
         exp_amp: np.ndarray,
         exp_phase: np.ndarray,
         phase_units: str,
+        use_hankel: bool = True,
         **phys_params
 ) -> np.ndarray:
     """
@@ -20,7 +22,10 @@ def ptr_residual(
     phi0_rad = np.deg2rad(p[4])
 
     # Get complex model response
-    _, y_complex = simulations_ptr(frequency_vector, k2, alfa2, r32, k3, **phys_params)
+    if use_hankel:
+        _, y_complex = simulations_ptr_hankel(frequency_vector, k2, alfa2, r32, k3, **phys_params)
+    else:
+        _, y_complex = simulations_ptr(frequency_vector, k2, alfa2, r32, k3, **phys_params)
 
     # ALIGNMENT STEP:
     # Normalize model so it starts at (1.0 + 0j) at f[0], then apply phi0 rotation.

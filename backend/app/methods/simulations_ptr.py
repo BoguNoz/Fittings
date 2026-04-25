@@ -49,7 +49,7 @@ def simulations_ptr(
 
     # IMPORTANT: The complex response must include the diffusion factor sqrt(j*omega).
     # This ensures the model's phase can rotate correctly.
-    y_complex = ypt3m / np.sqrt(1j * omega)
+    y_complex = ypt3m / np.sqrt(omega)
     amplitude = np.abs(y_complex)
 
     return amplitude, y_complex

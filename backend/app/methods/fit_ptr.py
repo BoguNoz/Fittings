@@ -20,7 +20,7 @@ def fit_ptr(
     """
 
     # --- Initial Guess and Bounds (log10 scale for physical params) ---
-    p0 = np.array([np.log10(1.0), np.log10(1e-6), np.log10(1e-7), np.log10(3.0), 0.0])
+    p0 = np.array([np.log10(10.0), np.log10(3e-6), np.log10(1e-8), np.log10(3.0), 0.0])
 
     # Extended bounds to account for high-diffusivity ZnO and prevent hitting walls
     lb = np.array([np.log10(1e-3), np.log10(1e-9), np.log10(1e-10), np.log10(0.1), -360.0])

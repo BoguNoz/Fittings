@@ -8,6 +8,7 @@ export const configRegisteredFields = {
     k1: "k1",
     l1: "l1",
     alfa1: "alfa1",
+    alfa2: "alfa2",
     alfa3: "alfa3",
     r21: "r21",
 }
@@ -57,6 +58,17 @@ fields.alfa1.validators = [
     validateDiffusivity
 ];
 fields.alfa1.variant = "secondary"
+// #endregion Alfa1
+
+// #region Alfa2
+fields.alfa2.fieldType = BaseFieldTypesEnum.Input
+fields.alfa2.validators = [
+    isNumber,
+    isPositive,
+    isGreaterThenZero,
+    validateDiffusivity
+];
+fields.alfa2.variant = "secondary"
 // #endregion Alfa1
 
 // #region Alfa3

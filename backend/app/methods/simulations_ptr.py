@@ -11,6 +11,7 @@ def simulations_ptr(
     l1: float = 80e-9,
     l2: float = 469e-9,
     alfa1: float = 8.9e-6,
+    alfa2_conf = -1,
     alfa3: float = 6.0e-6,
     r21: float = 2.8e-8,
 ) -> tuple[np.ndarray, np.ndarray]:
@@ -19,6 +20,7 @@ def simulations_ptr(
     Includes the critical sqrt(1j * omega) factor for correct phase behavior.
     """
     omega = 2 * np.pi * frequency_vector
+    alfa2 = alfa2_conf if alfa2_conf != -1 else alfa2
 
     # Thermal wave numbers (complex sigma)
     s1 = np.sqrt(1j * omega / alfa1)

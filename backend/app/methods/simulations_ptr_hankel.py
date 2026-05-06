@@ -14,6 +14,7 @@ def simulations_ptr_hankel(
         l1: float = 80e-9,          # thickness of the transducer (m)
         l2: float = 469e-9,         # thickness of the film (m)
         alfa1: float = 8.9e-6,      # thermal diffusivity of the transducer (m²/s)
+        alfa2_conf = -1,
         alfa3: float = 6.0e-6,      # thermal diffusivity of the substrate (m²/s)
         r21: float = 2.8e-8,        # thermal boundary resistance between transducer and film (m
         d_pump: float = 2.42e-6,    # pump beam 1/e² radius (m)
@@ -43,6 +44,7 @@ def simulations_ptr_hankel(
 
     omega = 2 * np.pi * frequency_vector
     theta_complex = np.zeros_like(frequency_vector, dtype=complex)
+    alfa2 = alfa2_conf if alfa2_conf != -1 else alfa2
 
     def layer_transfer_matrix(
             k_perp: float,

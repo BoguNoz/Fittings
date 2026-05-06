@@ -43,6 +43,7 @@ class PTRProcessor:
             k1=self._config.k1,
             l1=self._config.l1,
             alfa1=self._config.alfa1,
+            alfa2_conf=self._config.alfa2,
             alfa3=self._config.alfa3,
             r21=self._config.r21,
         )

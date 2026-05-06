@@ -33,7 +33,7 @@ const FormSidePanel = observer((props: FormSidePanelProps) => {
                     compositeId={registeredAppComposites.ptrSection}
                     compositeStore={props.compositeStore}
                     store={props.formStore}
-                    isClosed={false}
+                    isClosed={true}
                 />
                 <SectionComposite
                     compositeId={registeredAppComposites.configSection}

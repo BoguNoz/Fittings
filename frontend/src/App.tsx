@@ -9,12 +9,19 @@ const App = () => {
     compositeStore.initializeComposite(appComposites)
 
   return (
-      <div className="flex min-h-screen items-center justify-center">
-          <Dashboard
+      <>
+          <Form
               compositeStore={compositeStore}
               formStore={formStore}
           />
-      </div>
+          <div className="flex min-h-screen items-center justify-center">
+              <Dashboard
+                  compositeStore={compositeStore}
+                  formStore={formStore}
+              />
+          </div>
+      </>
+
 
   )
 }

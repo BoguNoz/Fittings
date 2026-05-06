@@ -1,7 +1,7 @@
 import {
     type BaseSectionModel,
     buildComposites, ChartCompositeSectionType,
-    createCompositesPlaceholders, SheetCompositeSectionType,
+    createCompositesPlaceholders, FormCardCompositeSectionType, SheetCompositeSectionType,
 } from "@bogunoz/simplify";
 import {SectionCompositeSectionType} from "@bogunoz/simplify/components";
 import {configFields} from "./form/config-fields.ts";
@@ -9,6 +9,7 @@ import {lang} from "../text/utils/lang.ts";
 import {ptrFields} from "./form/ptr-fields.ts";
 import {actionFields} from "./form/action-fields.ts";
 import {amplitudeLinearField, normalizedAmplitudeLogField, phaseField} from "./dashboard/chart-fields.ts";
+import {resultFormFields} from "./form/result-form.ts";
 
 const text = lang();
 
@@ -22,6 +23,7 @@ export const registeredAppComposites = {
     normalizedAmplitudeLogChart: "normalizedAmplitudeLogChart",
     phaseChart: "phaseChart",
     lineChartCard: "lineChartCard",
+    resultForm: "resultForm",
 }
 
 const composites = createCompositesPlaceholders(registeredAppComposites);
@@ -156,5 +158,27 @@ composites.lineChartCard.render = true;
 composites.lineChartCard.renderFn = () => true;
 composites.lineChartCard.mode = "square-window";
 // #endregion Line Chart Card
+
+// #region Result Form
+composites.resultForm.render = true;
+composites.resultForm.renderFn = () => true;
+composites.resultForm.sections = [
+    {
+        type: ChartCompositeSectionType.HEADER,
+        title: text.ptrFitResult.sectionTitle,
+        description: text.ptrFitResult.sectionDescription,
+        disable: false,
+
+    } as BaseSectionModel,
+    {
+        type: FormCardCompositeSectionType.BODY,
+        fields: resultFormFields,
+        disable: false,
+
+    } as BaseSectionModel,
+];
+composites.resultForm.mode = "vertical-window";
+composites.resultForm.size = 0.65;
+// #endregion Result Form
 
 export const appComposites = buildComposites(composites);

@@ -89,8 +89,8 @@ export default {
         k2Label: "Thermal Conductivity (ZnO Layer)",
         k2Description: "Thermal conductivity of the ZnO thin film (Layer 2) in W/(m·K).",
 
-        alfa2Label: "Thermal Diffusivity (ZnO Layer)",
-        alfa2Description: "Thermal diffusivity of the ZnO thin film (Layer 2) in m²/s.",
+        alfa2rLabel: "Thermal Diffusivity (ZnO Layer)",
+        alfa2rDescription: "Thermal diffusivity of the ZnO thin film (Layer 2) in m²/s.",
 
         r32Label: "Thermal Boundary Resistance (ZnO–Substrate)",
         r32Description: "Interfacial thermal resistance between the ZnO layer and the substrate (Layer 3) in m²·K/W.",

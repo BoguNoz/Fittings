@@ -7,7 +7,7 @@ export interface DataRequestDto {
     alfa3: number;
     r21: number;
 
-    sampleName: string;
-    useHankel: boolean;
+    sample_name: string;
+    use_hankel: boolean;
     file: File;
 }

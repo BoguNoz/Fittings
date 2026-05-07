@@ -18,10 +18,12 @@ fields.dataInput.isRequired = true;
 
 // #region Sample Name
 fields.sampleName.fieldType = BaseFieldTypesEnum.Input
+fields.sampleName.variant = "secondary"
 // #endregion Sample Name
 
 // #region Use Full Hankel Model
 fields.useFullHankelModel.fieldType = BaseFieldTypesEnum.Switch
+fields.useFullHankelModel.variant = "secondary"
 // #endregion Use Full Hankel Model
 
 export const ptrFields = buildFields(fields);

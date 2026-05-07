@@ -11,7 +11,7 @@ class PTRProcessor:
         # Data
         self._data: PTRData = None
         self._config: PTRConfig = None
-        self._phase_units: str = "auto"
+        self._phase_units: str = "rad"
 
         # Methods
         self._phase_correction: float = 0.0
@@ -38,7 +38,6 @@ class PTRProcessor:
             frequency_vector=self._data.frequency,
             exp_amp=self._data.amplitude,
             exp_phase=self._data.phase_deg,
-            phase_units=self._phase_units,
             l2=self._config.l2,
             k1=self._config.k1,
             l1=self._config.l1,

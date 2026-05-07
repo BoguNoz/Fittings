@@ -22,7 +22,6 @@ class PTRFitResult:
     model_phase_deg: np.ndarray
     exp_phase_deg: np.ndarray
 
-    phase_units: str          # Units used for input phase ('deg' or 'rad')
     pfit: np.ndarray          # Optimized parameters in log10 scale + phi0
     exit_flag: int            # Status from scipy.optimize.least_squares
     frequency_vector: np.ndarray

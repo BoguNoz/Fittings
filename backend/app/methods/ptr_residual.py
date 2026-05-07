@@ -10,43 +10,42 @@ def ptr_residual(
         exp_amp: np.ndarray,
         exp_phase: np.ndarray,
         phase_units: str,
-        use_hankel: bool = True,
+        use_hankel: bool = False,
         **phys_params
 ) -> np.ndarray:
     """
-    Calculates the complex residual between model and experiment.
-    Aligns both signals at the first frequency point to ensure phase consistency.
+    Computes the weighted complex residual between model and experiment.
+    Used by the least_squares optimizer.
     """
     # Unpack parameters from log10 space
-    k2, alfa2, r32, k3 = 10 ** p[0], 10 ** p[1], 10 ** p[2], 10 ** p[3]
+    k2 = 10 ** p[0]
+    alfa2 = 10 ** p[1]
+    r32 = 10 ** p[2]
+    k3 = 10 ** p[3]
     phi0_rad = np.deg2rad(p[4])
 
-    # Get complex model response
+    # Generate complex model response
     if use_hankel:
         _, y_complex = simulations_ptr_hankel(frequency_vector, k2, alfa2, r32, k3, **phys_params)
     else:
         _, y_complex = simulations_ptr(frequency_vector, k2, alfa2, r32, k3, **phys_params)
 
-    # ALIGNMENT STEP:
-    # Normalize model so it starts at (1.0 + 0j) at f[0], then apply phi0 rotation.
+    # Normalize model and apply phase correction
     y_norm = (y_complex / y_complex[0]) * np.exp(1j * phi0_rad)
 
-    # Convert experimental phase to radians
+    # Convert experimental data to complex form
     exp_phase_rad = np.deg2rad(exp_phase) if phase_units.lower() == "deg" else exp_phase
-
-    # Create experimental complex signal
     exp_complex_raw = exp_amp * np.exp(1j * exp_phase_rad)
 
-    # ALIGNMENT STEP:
-    # Normalize experiment exactly like the model (relative to its own first point).
-    # This removes any initial hardware offset and lets phi0 handle the shift.
+    # Normalize experiment the same way as the model
     e_norm = (exp_complex_raw / exp_complex_raw[0]) * np.exp(1j * phi0_rad)
 
-    # Weighting: emphasize high frequencies (same as MATLAB's 0.8 power)
+    # Weighting - emphasize higher frequencies (common in thermal wave analysis)
     weight = (frequency_vector / frequency_vector.max()) ** 0.8
 
-    # Complex relative difference
+    # Complex relative error
     diff = (y_norm - e_norm) / np.maximum(np.abs(e_norm), 1e-12)
     diff = diff * weight
 
+    # Return stacked real and imaginary parts (with higher weight on imaginary for phase)
     return np.concatenate([np.real(diff), np.imag(diff) * 5.0])

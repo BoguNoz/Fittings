@@ -18,6 +18,7 @@ class PTRFitResult:
 
     # Model and experimental curves (for plotting)
     model_amp: np.ndarray
+    exp_amp: np.ndarray
     model_phase_deg: np.ndarray
     exp_phase_deg: np.ndarray
 

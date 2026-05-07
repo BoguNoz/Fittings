@@ -3,20 +3,21 @@ import type {DataRequestDto} from "../models/data-request-dto.ts";
 import {BaseResponseTypeEnum} from "@bogunoz/simplify/models";
 
 // Development localny http://localhost:8000
-const api = createServiceClient("http://localhost:8000");
+const api = createServiceClient("http://127.0.0.1:8000");
 
 export interface DataServiceInterface {
-    fetchPtrResults: (dataRequest: DataRequestDto) => Promise<ArrayBuffer>;
+    fetchPtrResults: (form: FormData) => Promise<unknown>;
 }
 
 class DataService implements DataServiceInterface {
-    fetchPtrResultsUrl = "/ptr-results";
+    fetchPtrResultsUrl = "/ptr-fitting";
 
-    fetchPtrResults = async (dataRequest: DataRequestDto) => {
-        return api<ArrayBuffer>(this.fetchPtrResultsUrl, {
+    fetchPtrResults = async (form: FormData) => {
+        return api(this.fetchPtrResultsUrl, {
             method: "POST",
-            body: JSON.stringify(dataRequest),
-            responseType: BaseResponseTypeEnum.ArrayBuffer
+            body: form,
+
+            responseType: BaseResponseTypeEnum.Json
         });
     };
 

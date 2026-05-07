@@ -25,7 +25,6 @@ fields.l2.validators = [
     isGreaterThenZero,
     validateThickness,
 ];
-fields.l2.variant = "secondary"
 fields.l2.addit!.placeholder = "469e-9"
 // #endregion L2
 
@@ -36,7 +35,6 @@ fields.k1.validators = [
     isPositive,
     isGreaterThenZero,
 ];
-fields.k1.variant = "secondary"
 fields.k1.addit!.placeholder = "21.0"
 // #endregion K1
 
@@ -48,7 +46,6 @@ fields.l1.validators = [
     isGreaterThenZero,
     validateThickness
 ];
-fields.l1.variant = "secondary"
 fields.l1.addit!.placeholder = "80e-9"
 // #endregion L1
 
@@ -60,7 +57,6 @@ fields.alfa1.validators = [
     isGreaterThenZero,
     validateDiffusivity
 ];
-fields.alfa1.variant = "secondary"
 fields.alfa1.addit!.placeholder = "8.9e-6"
 // #endregion Alfa1
 
@@ -72,7 +68,6 @@ fields.alfa2.validators = [
     isGreaterThenZero,
     validateDiffusivity
 ];
-fields.alfa2.variant = "secondary"
 // #endregion Alfa1
 
 // #region Alfa3
@@ -83,7 +78,6 @@ fields.alfa3.validators = [
     isGreaterThenZero,
     validateDiffusivity
 ];
-fields.alfa3.variant = "secondary"
 fields.alfa3.addit!.placeholder = "6.0e-6"
 // #endregion Alfa3
 
@@ -93,7 +87,6 @@ fields.r21.validators = [
     isNumber,
     isPositive,
 ];
-fields.r21.variant = "secondary"
 fields.r21.addit!.placeholder = "2.8e-8"
 // #endregion R21
 

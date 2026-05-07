@@ -3,6 +3,7 @@ import {appComposites} from "./repositories/composites.ts";
 import Form from "./components/layout/FormSidePanel.tsx";
 import {formStore} from "./stores/form-store.ts";
 import Dashboard from "./components/layout/Dashboard.tsx";
+import {Toaster} from "@bogunoz/simplify";
 
 const App = () => {
 
@@ -20,6 +21,7 @@ const App = () => {
                   formStore={formStore}
               />
           </div>
+          <Toaster richColors position="top-right" />
       </>
 
 

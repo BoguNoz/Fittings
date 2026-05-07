@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@bogunoz/simplify": "^0.2.11",
+    "@bogunoz/simplify": "^0.2.20",
     "@fontsource-variable/geist": "^5.2.8",
     "@tailwindcss/vite": "^4.2.2",
     "class-variance-authority": "^0.7.1",

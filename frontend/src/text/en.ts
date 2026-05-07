@@ -130,5 +130,9 @@ export default {
 
         sampleNameLabel: "Sample Name",
         sampleNameDescription: "Identifier of the analyzed sample."
+    },
+
+    errors: {
+        fetchPtrResultsFailed: "Failed to fetch data.",
     }
 }

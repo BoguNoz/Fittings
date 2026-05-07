@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Union, BinaryIO
 
 import numpy as np
 
@@ -36,6 +37,37 @@ class FittingProcessorBuilder:
         )
 
         self._processor.load_data(data)
+        return self
+
+    def load_dat_data(
+            self,
+            file_source,
+            sample_name: str = "test"
+    ) -> 'FittingProcessorBuilder':
+
+        try:
+            source = file_source.file if hasattr(file_source, "file") else file_source
+
+            data = np.loadtxt(
+                source,
+                skiprows=0,
+                delimiter=None,
+                comments='#',
+                usecols=(0, 1, 2)
+            )
+
+        except Exception as e:
+            raise ValueError(f"File error: {e}")
+
+        ptr_data = PTRData(
+            frequency=data[:, 0],
+            amplitude=data[:, 1],
+            phase_deg=data[:, 2],
+            sample_name=sample_name
+        )
+
+        self._processor.load_data(ptr_data)
+
         return self
 
     def load_config(self, config: PTRConfig) -> 'FittingProcessorBuilder':

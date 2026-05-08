@@ -26,7 +26,7 @@ print("Starting PTR data processing...\n")
 
 # Create and run the fitting using the builder
 result = (FittingProcessorBuilder()
-          .load_dat_file("data/PEDO-1.dat", sample_name="X32B")   # ← CHANGE filename and sample name
+          .load_dat_file("data/32B.dat", sample_name="X32B")   # ← CHANGE filename and sample name
           .load_config(config)
 
           .build().process())

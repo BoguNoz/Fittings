@@ -1,5 +1,6 @@
 import numpy as np
 
+from app.methods.correct_ptr_data import correct_ptr_data
 from app.methods.fit_ptr import fit_ptr
 from app.methods.fit_ptr_multi_start import fit_ptr_multi_start
 from app.models.ptr_config import PTRConfig
@@ -35,11 +36,18 @@ class PTRProcessor:
         return self
 
     def build_and_fit(self) -> PTRFitResult:
+        freq, amp, phase = correct_ptr_data(
+            self._data.frequency,
+            self._data.amplitude,
+            self._data.phase_deg,
+            True
+        )
+
         if self._starting_points_count > 1:
             return fit_ptr_multi_start(
-            frequency_vector=self._data.frequency,
-            exp_amp=self._data.amplitude,
-            exp_phase=self._data.phase_deg,
+            frequency_vector=freq,
+            exp_amp=amp,
+            exp_phase=phase,
             n_starts=self._starting_points_count,
             l2=self._config.l2,
             k1=self._config.k1,

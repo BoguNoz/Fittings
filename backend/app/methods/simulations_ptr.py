@@ -7,45 +7,34 @@ def simulations_ptr(
         r32: float,
         k3: float,
         *,
-        k1: float = 21.0,
-        l1: float = 80e-9,
-        l2: float = 469e-9,
-        alfa1: float = 8.9e-6,
-        alfa3: float = 6.0e-6,
-        r21: float = 2.8e-8,
-        **kwargs  # Captures extra config arguments like 'alfa2_conf' to prevent TypeErrors
+        k1: float = 200.0,          # Aluminium (typical)
+        l1: float = 50e-9,          # 50 nm Al transducer
+        l2: float = 240e-9,         # PEDOT:PSS thickness (adjust to sample)
+        alfa1: float = 8.2e-5,      # Al thermal diffusivity
+        alfa3: float = 0.5e-6,      # Glass substrate (corrected from 0.5e-7)
+        r21: float = 1.0e-8,        # Al/PEDOT interface resistance
+        **kwargs                    # Absorbs extra config keys (e.g., 'phase_weight')
 ) -> tuple[np.ndarray, np.ndarray]:
     """
-    Computes the complex PTR (Photothermal Radiometry) response for a 3-layer system.
-
-    Args:
-        frequency_vector: Array of modulation frequencies [Hz].
-        k2: Thermal conductivity of the second layer [W/mK].
-        alfa2: Thermal diffusivity of the second layer [m^2/s].
-        r32: Thermal boundary resistance between layer 3 and 2 [m^2K/W].
-        k3: Thermal conductivity of the substrate (layer 3) [W/mK].
-        k1, l1, l2, alfa1, alfa3, r21: Fixed physical constants.
-        **kwargs: Catch-all for additional configuration parameters.
-
-    Returns:
-        tuple: (amplitude array, complex response array).
+    Computes the complex PTR response for a 3-layer system (metal / thin film / substrate).
+    Returns (amplitude, complex_response).
     """
     omega = 2 * np.pi * frequency_vector
 
-    # Thermal wave numbers (complex sigma) for each layer
+    # Thermal wave numbers
     s1 = np.sqrt(1j * omega / alfa1)
     s2 = np.sqrt(1j * omega / alfa2)
     s3 = np.sqrt(1j * omega / alfa3)
 
-    # Thermal effusivity ratios and reflection coefficients
+    # Effusivity ratios
     ro12 = (k1 * s1) / (k2 * s2)
     ro21 = (k2 * s2) / (k1 * s1)
 
-    # Phase shifts within layers (complex tangents)
+    # Tangents of complex phase shifts
     t1 = np.tan(s1 * l1)
     t2 = np.tan(s2 * l2)
 
-    # Matrix coefficients for the 3-layer thermal wave propagation
+    # Matrix coefficients (standard multilayer thermal wave solution)
     A = (1 + r21 * k1 * s1 * t1 + ro12 * t1 * t2 +
          r32 * (k1 * s1 * t1 + k2 * s2 * t2 - r21 * k1 * s1 * k2 * s2 * t1 * t2))
 
@@ -56,10 +45,10 @@ def simulations_ptr(
 
     D = 1 + ro21 * t1 * t2 + r21 * k2 * s2 * t2
 
-    # Surface temperature oscillation solution
+    # Surface temperature solution
     ypt3m = -(G - k3 * s3 * A) / (D - k3 * s3 * B)
 
-    # Frequency-dependent normalization for the radiometry signal
+    # Radiometry signal includes 1/sqrt(ω) factor
     y_complex = ypt3m / np.sqrt(omega)
     amplitude = np.abs(y_complex)
 

@@ -53,9 +53,13 @@ class PTRProcessor:
             k1=self._config.k1,
             l1=self._config.l1,
             alfa1=self._config.alfa1,
-            alfa2_conf=self._config.alfa2,
             alfa3=self._config.alfa3,
-            r21=self._config.r21)
+            r21=self._config.r21,
+            weight_exponent=self._config.weight_exponent,
+            phase_weight=self._config.phase_weight,
+            k3_fixed=self._config.k3_fixed,
+            fixed_k3=self._config.fixed_k3,
+            )
 
         return fit_ptr(
             frequency_vector=self._data.frequency,
@@ -65,7 +69,6 @@ class PTRProcessor:
             k1=self._config.k1,
             l1=self._config.l1,
             alfa1=self._config.alfa1,
-            alfa2_conf=self._config.alfa2,
             alfa3=self._config.alfa3,
             r21=self._config.r21,
         )

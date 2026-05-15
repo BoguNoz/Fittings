@@ -34,6 +34,7 @@ export const sendPtrRequest = (formStore: FormStoreInterface): BaseOperationFn =
         formData.append('r21', request.r21.toString());
         formData.append('sample_name', request.sample_name);
         formData.append('use_hankel', String(request.use_hankel));
+        formData.append('weight', String(request.weight));
 
         await formStore.fetchPtrResults(formData);
 

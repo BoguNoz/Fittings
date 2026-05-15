@@ -38,4 +38,5 @@ def ptr_residual(
 
     # Return stacked real and imaginary components.
     # Imaginary part is weighted by 2.0 to prioritize phase fitting accuracy.
-    return np.concatenate([np.real(diff), np.imag(diff) * 3.3])
+    phase_weight = phys_params.get("phase_weight", 2.0)
+    return np.concatenate([np.real(diff), np.imag(diff) * phase_weight])

@@ -57,46 +57,51 @@ export default {
 
     ptrConfig: {
         sectionTitle: "PTR Configuration",
-        sectionDescription: "Configuration parameters for the PTR model fitting. Contains fixed geometrical and thermal properties of the layers and interfacial resistances.",
+        sectionDescription: "Fixed geometrical, thermal, and fitting parameters for the photothermal radiometry model.",
 
-        l2Label: "ZnO Layer Thickness (L2)",
-        l2Description: "Thickness of the main ZnO layer (Layer 2), expressed in meters. Usually determined from RBS or ellipsometry measurements.",
+        l2Label: "Layer Thickness (L2)",
+        l2Description: "Thickness of the film (Layer 2), in meters (e.g., 240e-9 or 480e-9).",
 
         k1Label: "Thermal Conductivity Layer 1 (K1)",
-        k1Description: "Thermal conductivity of the top layer (Layer 1) in W/(m·K).",
+        k1Description: "Thermal conductivity of the top transducer/absorber layer (if present) in W/(m·K).",
 
         l1Label: "Thickness of Layer 1 (L1)",
-        l1Description: "Thickness of the top layer (Layer 1), expressed in meters.",
+        l1Description: "Thickness of the top layer (e.g., metal transducer), in meters.",
 
         alfa1Label: "Thermal Diffusivity Layer 1 (α1)",
-        alfa1Description: "Thermal diffusivity of the top layer (Layer 1) in m²/s.",
+        alfa1Description: "Thermal diffusivity of the top layer in m²/s.",
 
-        // Poprawione:
-        alfa2Label: "Thermal Diffusivity ZnO Layer (α2)",
-        alfa2Description: "Thermal diffusivity of the ZnO thin film (Layer 2) in m²/s.",
+        alfa2Label: "Thermal Diffusivity (α2)",
+        alfa2Description: "Thermal diffusivity of the layer (Layer 2) in m²/s.",
 
         alfa3Label: "Thermal Diffusivity Substrate (α3)",
-        alfa3Description: "Thermal diffusivity of the substrate (Layer 3) in m²/s.",
+        alfa3Description: "Thermal diffusivity of the substrate (e.g., glass) in m²/s.",
 
         r21Label: "Thermal Boundary Resistance L1–L2 (R21)",
-        r21Description: "Interfacial thermal resistance between the top layer (Layer 1) and ZnO layer (Layer 2) in m²·K/W.",
+        r21Description: "Interfacial thermal resistance between Layer 1 and layer in m²·K/W.",
+
+        r32Label: "Thermal Boundary Resistance–Substrate (R32)",
+        r32Description: "Interfacial thermal resistance between and the substrate in m²·K/W.",
+
+        k2Label: "Thermal Conductivity (K2)",
+        k2Description: "In-plane or cross-plane thermal conductivity of the layer in W/(m·K).",
+
+        weightLabel: "High-Frequency Weighting Exponent",
+        weightDescription: "Power-law exponent used to weight residuals: weight = (f / f_max)^exponent. Increases importance of high-frequency points where thermal diffusion length is shorter. Controls balance between low- and high-frequency fit quality.",
     },
 
     ptrFitResult: {
         sectionTitle: "PTR Fitting Results",
         sectionDescription: "Container holding the results of the photothermal radiometry (PTR) model fitting, including optimized thermal parameters, model curves, and fit diagnostics.",
 
-        k2Label: "Thermal Conductivity (ZnO Layer)",
-        k2Description: "Thermal conductivity of the ZnO thin film (Layer 2) in W/(m·K).",
+        k2Label: "Thermal Conductivity",
+        k2Description: "Fitted thermal conductivity of the thin film in W/(m·K). Literature values: ~0.3–0.5 W/(m·K) depending on thickness and direction.",
 
-        alfa2rLabel: "Thermal Diffusivity (ZnO Layer)",
-        alfa2rDescription: "Thermal diffusivity of the ZnO thin film (Layer 2) in m²/s.",
+        alfa2rLabel: "Thermal Diffusivity",
+        alfa2rDescription: "Fitted thermal diffusivity of the layer in m²/s. Literature range: ~1.2–1.8 × 10⁻⁷ m²/s (cross-plane).",
 
-        r32Label: "Thermal Boundary Resistance (ZnO–Substrate)",
-        r32Description: "Interfacial thermal resistance between the ZnO layer and the substrate (Layer 3) in m²·K/W.",
-
-        k3Label: "Thermal Conductivity (Substrate)",
-        k3Description: "Thermal conductivity of the substrate (Layer 3) in W/(m·K).",
+        r32Label: "Thermal Boundary Resistance",
+        r32Description: "Interfacial thermal resistance between the second layer and the substrate (Layer 3) in m²·K/W.",
 
         phi0DegLabel: "Global Phase Offset",
         phi0DegDescription: "Global phase shift applied to align the model phase with experimental data, expressed in degrees.",
@@ -125,8 +130,8 @@ export default {
         frequencyVectorLabel: "Frequency Vector",
         frequencyVectorDescription: "Array of modulation frequencies used in the PTR measurement.",
 
-        l2Label: "ZnO Layer Thickness",
-        l2Description: "Thickness of the ZnO layer (Layer 2) used in the model, in meters.",
+        l2Label: "Second Layer Thickness",
+        l2Description: "Thickness of the second layer used in the model, in meters.",
 
         sampleNameLabel: "Sample Name",
         sampleNameDescription: "Identifier of the analyzed sample."

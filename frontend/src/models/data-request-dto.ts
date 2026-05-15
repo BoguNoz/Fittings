@@ -6,6 +6,7 @@ export interface DataRequestDto {
     alfa2: number;
     alfa3: number;
     r21: number;
+    weight: number;
 
     sample_name: string;
     use_hankel: boolean;

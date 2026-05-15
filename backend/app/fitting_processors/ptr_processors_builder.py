@@ -33,7 +33,6 @@ class FittingProcessorBuilder:
             frequency=frequency,
             amplitude=amplitude,
             phase_deg=phase_deg,
-            sample_name=sample_name
         )
 
         self._processor.load_data(data)
@@ -42,7 +41,6 @@ class FittingProcessorBuilder:
     def load_dat_data(
             self,
             file_source,
-            sample_name: str = "test"
     ) -> 'FittingProcessorBuilder':
 
         try:
@@ -63,11 +61,14 @@ class FittingProcessorBuilder:
             frequency=data[:, 0],
             amplitude=data[:, 1],
             phase_deg=data[:, 2],
-            sample_name=sample_name
         )
 
         self._processor.load_data(ptr_data)
 
+        return self
+
+    def set_starting_point_count(self, count: int) -> 'FittingProcessorBuilder':
+        self._processor._starting_points_count = count
         return self
 
     def load_config(self, config: PTRConfig) -> 'FittingProcessorBuilder':

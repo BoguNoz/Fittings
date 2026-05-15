@@ -21,7 +21,6 @@ export const mapPtrResponse = (json: any): PTRChartData => {
             r32: Number(json.results?.r32 ?? 0),
             phi0_deg: Number(json.results?.phi0_deg ?? 0),
             res_norm: Number(json.results?.res_norm ?? 0),
-            phase_units: String(json.results?.phase_units ?? "deg"),
         },
     };
 };

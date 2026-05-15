@@ -6,8 +6,7 @@ export interface PTRChartPoint {
 export interface PTRResults {
     sample_name: string;
     k2: number;
-    k3: number;
-    alfa2r: number;
+    alfa2: number;
     r32: number;
     phi0_deg: number;
     res_norm: number;

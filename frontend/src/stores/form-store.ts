@@ -44,12 +44,11 @@ export class FormStore extends BaseStore {
             this.notifyFieldChanged("amplitudeLinear");
             this.notifyFieldChanged("normalizedAmplitudeLog");
 
-            this.notifyFieldChanged(resultFormRegisteredFields.k2)
-            this.notifyFieldChanged(resultFormRegisteredFields.k3)
-            this.notifyFieldChanged(resultFormRegisteredFields.alfa2r)
-            this.notifyFieldChanged(resultFormRegisteredFields.r32)
-            this.notifyFieldChanged(resultFormRegisteredFields.phi0Deg)
-            this.notifyFieldChanged(resultFormRegisteredFields.resNorm)
+            this.setFieldValue(resultFormRegisteredFields.k2, this.ptrData?.results.k2)
+            this.setFieldValue(resultFormRegisteredFields.alfa2r, this.ptrData?.results.alfa2)
+            this.setFieldValue(resultFormRegisteredFields.r32, this.ptrData?.results.r32)
+            this.setFieldValue(resultFormRegisteredFields.phi0Deg, this.ptrData?.results.phi0_deg)
+            this.setFieldValue(resultFormRegisteredFields.resNorm, this.ptrData?.results.res_norm)
 
 
         } catch (error) {

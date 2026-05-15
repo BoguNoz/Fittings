@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import numpy as np
 
 
@@ -26,6 +26,8 @@ class PTRFitResult:
     exit_flag: int            # Status from scipy.optimize.least_squares
     frequency_vector: np.ndarray
 
-    l2: float = 469e-9        # Thickness of main ZnO layer used in the model [m]
+    n_starts: int = 25
+    best_resnorm: float = 0.0
+    all_results: list[dict] = field(default_factory=list)
 
-    sample_name: str = "TEST"        # Name of the sample
+    l2: float = 469e-9        # Thickness of main ZnO layer used in the model [m]

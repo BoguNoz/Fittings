@@ -29,6 +29,7 @@ async def ptr_fitting(
     alfa2: float = Form(...),
     alfa3: float = Form(...),
     r21: float = Form(...),
+    weight: float = Form(...),
 
     sample_name: str = Form(...),
     use_hankel: bool = Form(...),
@@ -42,7 +43,8 @@ async def ptr_fitting(
         alfa1=alfa1,
         alfa2=alfa2,
         alfa3=alfa3,
-        r21=r21
+        r21=r21,
+        weight=weight,
     )
 
     result = (FittingProcessorBuilder()
@@ -79,7 +81,6 @@ async def ptr_fitting(
         phase_data=phase_data,
         results={
             "k2": float(result.k2),
-            "k3": float(result.k2),
             "alfa2r": float(result.alfa2),
             "r32": float(result.r32),
             "phi0_deg": float(result.phi0_deg),

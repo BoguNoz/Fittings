@@ -27,6 +27,7 @@ export const mapToDataRequest = (store: BaseStore) => {
         alfa2: getNumberOrDefault(configRegisteredFields.alfa2, -1),
         alfa3: getNumberOrDefault(configRegisteredFields.alfa3, 6.0e-6),
         r21: getNumberOrDefault(configRegisteredFields.r21, 2.8e-8),
+        weight: getNumberOrDefault(configRegisteredFields.weight, 3.3),
 
         sample_name: store.getFieldValue(ptrRegisteredFields.sampleName) ?? "EXPERIMENT",
         use_hankel: Boolean(store.getFieldValue(ptrRegisteredFields.useFullHankelModel)),

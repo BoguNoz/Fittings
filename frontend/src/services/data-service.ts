@@ -1,9 +1,8 @@
 import {createServiceClient} from "@bogunoz/simplify/services";
-import type {DataRequestDto} from "../models/data-request-dto.ts";
 import {BaseResponseTypeEnum} from "@bogunoz/simplify/models";
 
 // Development localny http://localhost:8000
-const api = createServiceClient("http://127.0.0.1:8000");
+const api = createServiceClient("http://localhost:8000");
 
 export interface DataServiceInterface {
     fetchPtrResults: (form: FormData) => Promise<unknown>;

@@ -11,6 +11,7 @@ export const configRegisteredFields = {
     alfa2: "alfa2",
     alfa3: "alfa3",
     r21: "r21",
+    weight: "weight",
 }
 
 
@@ -88,6 +89,15 @@ fields.r21.validators = [
     isPositive,
 ];
 fields.r21.addit!.placeholder = "2.8e-8"
+// #endregion R21
+
+// #region R21
+fields.weight.fieldType = BaseFieldTypesEnum.Input
+fields.weight.validators = [
+    isNumber,
+    isPositive,
+];
+fields.weight.addit!.placeholder = "3.3"
 // #endregion R21
 
 

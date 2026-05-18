@@ -42,7 +42,7 @@ class PTRProcessor:
             self._data.phase_deg,
             True
         )
-
+        freq = freq * 1000
 
         return fit_ptr_multi_start(
             frequency_vector=freq,

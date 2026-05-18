@@ -10,7 +10,10 @@ from app.models.ptr_config import PTRConfig
 # Set the main ZnO layer thickness here (obtained from RBS analysis)
 # Change this value according to your sample (in nanometers)
 config = PTRConfig(
-
+    l2=240e-9,
+    alfa3=0.5e-7,
+    rhoc=2.5e6,
+    d_pump=2.42e-6,
     # Other parameters can be adjusted if needed:
     # k1=21.0, l1=80e-9, alfa1=8.9e-6, alfa3=6.0e-6, r21=2.8e-8
 )
@@ -21,7 +24,7 @@ print("Starting PTR data processing...\n")
 
 # Create and run the fitting using the builder
 result = (FittingProcessorBuilder()
-            .load_dat_file("data/PEDO-1.dat", sample_name="X32B")   # ← CHANGE filename and sample name
+            .load_dat_file("data/test_realistic.dat", sample_name="X32B")   # ← CHANGE filename and sample name
             .load_config(config)
             .set_starting_point_count(25)
             .build().process())
@@ -34,6 +37,7 @@ print("Frequency range:", result.frequency_vector.min(), "-", result.frequency_v
 # ============================== 3. PRINT FIT RESULTS ==============================
 print("=== PTR FITTING SUMMARY ===")
 print(f"k2 (thermal conductivity): {result.k2:.4f} W/(m·K)")
+print(f"k2 (thermal conductivity) -2: {result.k_parallel:.4f} W/(m·K)")
 print(f"alfa2 (thermal diffusivity): {result.alfa2:.2e} m²/s")
 print(f"r32 (thermal boundary resistance): {result.r32:.2e} m²·K/W")
 print(f"Phase offset (phi0):   {result.phi0_deg:.3f} deg")

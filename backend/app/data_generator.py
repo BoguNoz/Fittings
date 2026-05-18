@@ -1,5 +1,7 @@
 import numpy as np
 from app.methods.simulations_ptr import simulations_ptr
+from app.methods.simulations_ptr_hankel import simulations_ptr_hankel
+
 
 def generate_realistic_ptr_data(
     k2: float,
@@ -82,7 +84,7 @@ def generate_realistic_ptr_data(
         freq = np.linspace(freq_range[0], freq_range[1], n_points)
 
     # Exact model response
-    _, y_complex = simulations_ptr(
+    _, y_complex = simulations_ptr_hankel(
         freq, k2, alfa2, r32, k3,
         k1=k1, l1=l1, alfa1=alfa1, alfa3=alfa3, r21=r21, l2=l2
     )

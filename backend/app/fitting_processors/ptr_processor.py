@@ -43,32 +43,21 @@ class PTRProcessor:
             True
         )
 
-        if self._starting_points_count > 1:
-            return fit_ptr_multi_start(
-            frequency_vector=freq,
-            exp_amp=amp,
-            exp_phase=phase,
-            n_starts=self._starting_points_count,
-            l2=self._config.l2,
-            k1=self._config.k1,
-            l1=self._config.l1,
-            alfa1=self._config.alfa1,
-            alfa3=self._config.alfa3,
-            r21=self._config.r21,
-            weight_exponent=self._config.weight_exponent,
-            phase_weight=self._config.phase_weight,
-            k3_fixed=self._config.k3_fixed,
-            fixed_k3=self._config.fixed_k3,
-            )
 
-        return fit_ptr(
-            frequency_vector=self._data.frequency,
-            exp_amp=self._data.amplitude,
-            exp_phase=self._data.phase_deg,
-            l2=self._config.l2,
-            k1=self._config.k1,
-            l1=self._config.l1,
-            alfa1=self._config.alfa1,
-            alfa3=self._config.alfa3,
-            r21=self._config.r21,
+        return fit_ptr_multi_start(
+        frequency_vector=freq,
+        exp_amp=amp,
+        exp_phase=phase,
+        n_starts=self._starting_points_count,
+        l2=self._config.l2,
+        k1=self._config.k1,
+        l1=self._config.l1,
+        alfa1=self._config.alfa1,
+        alfa3=self._config.alfa3,
+        r21=self._config.r21,
+        weight_exponent=self._config.weight_exponent,
+        phase_weight=self._config.phase_weight,
+        d_pump=self._config.d_pump,
+        Q=self._config.Q,
+        rhoc=self._config.rhoc,
         )

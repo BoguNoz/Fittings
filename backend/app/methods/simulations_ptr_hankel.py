@@ -86,6 +86,7 @@ def simulations_ptr_hankel(
     # Prefactor and 1/√ω factor (essential for correct frequency behaviour)
     theta_complex *= -Q / (2 * np.pi)
     theta_complex /= np.sqrt(omega + 1e-30)
+    #print(f"f={frequency_vector[0]:.1f} Hz, theta={theta_complex[0]:.3e}")
 
     amplitude = np.abs(theta_complex)
     return amplitude, theta_complex   # no internal normalization

@@ -9,13 +9,13 @@ from app.models.ptr_config import PTRConfig
 # ============================== 1. CONFIGURATION ==============================
 config = PTRConfig(
     l2=240e-9,
-    k1=200.0,  # bez zmian
+    k1=200.0,             # Al
     l1=50e-9,
     alfa1=8.2e-5,
-    alfa3=1.0e-6,  # zwiększona dyfuzyjność szkła
-    r21=1.0e-7,  # większy opór Al/PEDOT:PSS
-    rhoc=1.5e6,  # mniejsza pojemność cieplna → większe alfa2
-    d_pump=5.0e-6,  # większa plamka lasera
+    alfa3=0.5e-7,         # szkło – standardowa wartość
+    r21=1.0e-8,           # standardowy opór Al/PEDOT:PSS
+    rhoc=1.3e6,           # WŁAŚCIWA POJEMNOŚĆ CIEPLNA PEDOT:PSS
+    d_pump=2.42e-6,       # zmierzona średnica plamki lasera
     Q=1.0,
     weight_exponent=0.5,
     phase_weight=1.5
@@ -25,7 +25,7 @@ config = PTRConfig(
 print("Starting PTR data processing...\n")
 
 result = (FittingProcessorBuilder()
-            .load_dat_file("data/PEDO-1.dat", sample_name="X32B")
+            .load_dat_file("data/test_realistic.dat", sample_name="X32B")
             .load_config(config)
             .set_starting_point_count(1)
             .build().process())

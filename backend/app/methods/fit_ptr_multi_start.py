@@ -24,9 +24,8 @@ def fit_ptr_multi_start(
     low_freq_mode = frequency_vector.max() < 1e5
 
     if low_freq_mode:
-        # k2: 0.08 - 0.35, anisotropy: 1.99 - 2.01, r32: 1e-10 - 1e-5, k3: 0.999 - 1.001, phi0: -45..45
-        lower = [np.log10(0.08), np.log10(1.99), np.log10(1e-10), np.log10(0.999), -45]
-        upper = [np.log10(0.35), np.log10(2.01), np.log10(1e-5),  np.log10(1.001),  45]
+        lower = [np.log10(0.05), np.log10(1.2), np.log10(1e-10), np.log10(0.8), -90.0]
+        upper = [np.log10(0.5), np.log10(4.0), np.log10(1e-6), np.log10(1.2), 90.0]
     else:
         lower = [np.log10(0.02), np.log10(1.0), np.log10(1e-10), np.log10(0.2), -180]
         upper = [np.log10(0.8),  np.log10(10.0), np.log10(1e-5), np.log10(5.0),  180]

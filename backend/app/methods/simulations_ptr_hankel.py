@@ -82,7 +82,7 @@ def simulations_ptr_hankel(
             theta_complex[idx] = 0.0 + 0j
 
     theta_complex *= -Q / (2 * np.pi)
-    theta_complex /= np.sqrt(omega + 1e-30)   # kluczowy czynnik
+    theta_complex /= np.sqrt(omega + 1e-30)
 
     # Zamień ewentualne NaN na 0
     theta_complex = np.nan_to_num(theta_complex, nan=0.0, posinf=0.0, neginf=0.0)

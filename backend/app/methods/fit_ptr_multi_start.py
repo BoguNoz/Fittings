@@ -11,8 +11,8 @@ from app.models.ptr_fit_result import PTRFitResult
 def fit_ptr_multi_start(
         frequency_vector: np.ndarray,
         exp_amp: np.ndarray,
-        exp_phase: np.ndarray,      # already unwrapped degrees!
-        n_starts: int = 1,
+        exp_phase: np.ndarray,
+        n_starts: int = 30,
         **phys_params
 ) -> PTRFitResult:
     best_result = None
@@ -20,38 +20,18 @@ def fit_ptr_multi_start(
     all_results = []
     np.random.seed(42)
 
-    # Jeśli dane są niskoczęstotliwościowe (max < 100 kHz), wymuszamy prawie stałe parametry podłoża i anizotropię
     low_freq_mode = frequency_vector.max() < 1e5
-
     if low_freq_mode:
-        lower = [np.log10(0.05), np.log10(1.2), np.log10(1e-10), np.log10(0.8), -90.0]
-        upper = [np.log10(0.5), np.log10(4.0), np.log10(1e-6), np.log10(1.2), 90.0]
+        lower = [np.log10(0.05), np.log10(1.0),  np.log10(1e-10), np.log10(0.8)]
+        upper = [np.log10(1.5),  np.log10(10.0), np.log10(1e-5),  np.log10(1.5)]
     else:
-        lower = [np.log10(0.02), np.log10(1.0), np.log10(1e-10), np.log10(0.2), -180]
-        upper = [np.log10(0.8),  np.log10(10.0), np.log10(1e-5), np.log10(5.0),  180]
+        lower = [np.log10(0.02), np.log10(1.0), np.log10(1e-10), np.log10(0.2)]
+        upper = [np.log10(1.5),  np.log10(10.0), np.log10(1e-5),  np.log10(3.0)]
 
-    rhoc = phys_params.get('rhoc', 2.5e6)
+    rhoc = phys_params.get('rhoc', 2.0e6)
 
     for i in tqdm(range(n_starts), desc="Multi‑start fitting"):
-        if low_freq_mode:
-            # Generujemy punkty startowe głównie wokół literatury, z małym rozrzutem
-            base = np.array([np.log10(0.18), np.log10(2.0), np.log10(2e-7), np.log10(1.0), 0.0])
-            if i == 0:
-                p0 = base
-            else:
-                perturb = np.array([
-                    np.random.normal(0, 0.1),
-                    np.random.normal(0, 0.01),
-                    np.random.normal(0, 0.3),
-                    np.random.normal(0, 0.001),
-                    np.random.uniform(-10, 10)
-                ])
-                p0 = base + perturb
-            # Przycinamy do bounds
-            p0 = np.clip(p0, lower, upper)
-        else:
-            p0 = generate_initial_guess(i, n_starts)
-
+        p0 = generate_initial_guess(i, n_starts, low_freq_mode)
         try:
             res = least_squares(
                 ptr_residual,
@@ -59,20 +39,28 @@ def fit_ptr_multi_start(
                 bounds=(lower, upper),
                 args=(frequency_vector, exp_amp, exp_phase),
                 kwargs=phys_params,
-                ftol=1e-8, xtol=1e-8, max_nfev=3000, verbose=0
+                ftol=1e-8, xtol=1e-8, max_nfev=3000
             )
             cost = 2 * res.cost
+            pfit = res.x
+            k2 = 10 ** pfit[0]
+            anisotropy = 10 ** pfit[1]
+            r32 = 10 ** pfit[2]
+            k3 = 10 ** pfit[3]
+            alfa2 = k2 / rhoc
+            k_parallel = k2 * anisotropy
+
             all_results.append({
-                'pfit': res.x,
+                'pfit': pfit,
                 'resnorm': cost,
+                'k2': k2,
+                'anisotropy': anisotropy,
+                'r32': r32,
+                'k3': k3,
+                'alfa2': alfa2,
+                'k_parallel': k_parallel,
                 'status': res.status,
-                'nfev': res.nfev,
-                'k2': 10 ** res.x[0],
-                'anisotropy': 10 ** res.x[1],
-                'r32': 10 ** res.x[2],
-                'k3': 10 ** res.x[3],
-                'phi0_deg': res.x[4],
-                'alfa2': 10 ** res.x[0] / rhoc
+                'nfev': res.nfev
             })
             if cost < best_resnorm:
                 best_resnorm = cost
@@ -88,8 +76,6 @@ def fit_ptr_multi_start(
     anisotropy = 10 ** pfit[1]
     r32 = 10 ** pfit[2]
     k3 = 10 ** pfit[3]
-    phi0_deg = pfit[4]
-
     alfa2 = k2 / rhoc
     k_parallel = k2 * anisotropy
 
@@ -100,29 +86,27 @@ def fit_ptr_multi_start(
         frequency_vector, k2, alfa2, r32, k3,
         anisotropy=anisotropy, **model_kwargs
     )
-    y_norm = (y_complex / y_complex[0]) * np.exp(1j * np.deg2rad(phi0_deg))
-    model_phase_deg = np.angle(y_norm, deg=True)
-
-    gain = np.mean(exp_amp[:5] / np.abs(y_norm[:5]))
-    model_amp_scaled = np.abs(y_norm) * gain
 
     exp_complex = exp_amp * np.exp(1j * np.deg2rad(exp_phase))
-    e_norm = (exp_complex / exp_complex[0]) * np.exp(1j * np.deg2rad(phi0_deg))
-    exp_phase_plot = np.angle(e_norm, deg=True)
+    G_opt = np.vdot(y_complex, exp_complex) / np.vdot(y_complex, y_complex)
+    model_scaled = G_opt * y_complex
+    model_amp = np.abs(model_scaled)
+    model_phase_deg = np.angle(model_scaled, deg=True)
+
 
     result = PTRFitResult(
         k2=k2,
         alfa2=alfa2,
         r32=r32,
         k3=k3,
-        phi0_deg=phi0_deg,
+        phi0_deg=np.angle(G_opt, deg=True), 
         anisotropy=anisotropy,
         k_parallel=k_parallel,
         res_norm=best_resnorm,
-        model_amp=model_amp_scaled,
+        model_amp=model_amp,
         exp_amp=exp_amp,
         model_phase_deg=model_phase_deg,
-        exp_phase_deg=exp_phase_plot,
+        exp_phase_deg=exp_phase,
         pfit=pfit,
         exit_flag=int(best_result.status),
         frequency_vector=frequency_vector,

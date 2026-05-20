@@ -17,10 +17,16 @@ class FittingProcessorBuilder:
 
     def load_dat_file(self, file_path: str, sample_name: str = "test") -> 'FittingProcessorBuilder':
         file_path = Path(file_path)
+
+        # wczytaj tekst i zamień przecinki dziesiętne na kropki
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read().replace(',', '.')
+
+        from io import StringIO
+
         data = np.loadtxt(
-            file_path,
+            StringIO(content),
             skiprows=0,
-            delimiter=None,
             comments='#',
             usecols=(0, 1, 2)
         )

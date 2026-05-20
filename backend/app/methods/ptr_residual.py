@@ -8,10 +8,6 @@ def ptr_residual(
         exp_phase_deg: np.ndarray,
         **phys_params
 ) -> np.ndarray:
-    """
-    Residual z optymalnym zespolonym wzmocnieniem (complex gain).
-    Parametry p (w skali log10): [k2, anisotropy, r32, k3]
-    """
     k2 = 10 ** p[0]
     anisotropy = 10 ** p[1]
     r32 = 10 ** p[2]
@@ -29,17 +25,18 @@ def ptr_residual(
         anisotropy=anisotropy, **model_kwargs
     )
 
-    exp_complex = exp_amp * np.exp(1j * np.deg2rad(exp_phase_deg))
+    phase_rad = np.unwrap(np.deg2rad(exp_phase_deg))
+    exp_complex = exp_amp * np.exp(1j * phase_rad)
 
     G = np.vdot(y_complex, exp_complex) / np.vdot(y_complex, y_complex)
-
     model_scaled = G * y_complex
 
     f_min = frequency_vector[0]
-    weight = (f_min / frequency_vector) ** 0.5
-
+    weight = np.sqrt(f_min / frequency_vector)
     denom = np.maximum(np.abs(exp_complex), 1e-12)
+
     diff = (model_scaled - exp_complex) / denom
 
     phase_weight = phys_params.get('phase_weight', 1.5)
-    return np.concatenate([np.real(diff) * weight, np.imag(diff) * weight * phase_weight])
+    return np.concatenate([np.real(diff) * weight,
+                           np.imag(diff) * weight * phase_weight])

@@ -25,7 +25,7 @@ config = PTRConfig(
 print("Starting PTR data processing...\n")
 
 result = (FittingProcessorBuilder()
-            .load_dat_file("data/PEDO-1.dat", sample_name="X32B")
+            .load_dat_file("data/PEDO-25.dat", sample_name="X32B")
             .load_config(config)
             .set_starting_point_count(1)
             .build().process())

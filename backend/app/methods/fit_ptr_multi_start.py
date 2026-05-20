@@ -87,8 +87,17 @@ def fit_ptr_multi_start(
         anisotropy=anisotropy, **model_kwargs
     )
 
-    exp_complex = exp_amp * np.exp(1j * np.deg2rad(exp_phase))
-    G_opt = np.vdot(y_complex, exp_complex) / np.vdot(y_complex, y_complex)
+    # ===== POPRAWKA: używamy tylko częstotliwości do 100 kHz =====
+    exp_phase_rad = np.unwrap(np.deg2rad(exp_phase))  # jeszcze raz dla bezpieczeństwa
+    exp_complex = exp_amp * np.exp(1j * exp_phase_rad)
+
+    stable_mask = frequency_vector <= 100_000   # 100 kHz
+    if np.any(stable_mask):
+        G_opt = np.vdot(y_complex[stable_mask], exp_complex[stable_mask]) / \
+                np.vdot(y_complex[stable_mask], y_complex[stable_mask])
+    else:
+        G_opt = np.vdot(y_complex, exp_complex) / np.vdot(y_complex, y_complex)
+
     model_scaled = G_opt * y_complex
     model_amp = np.abs(model_scaled)
     model_phase_deg = np.angle(model_scaled, deg=True)

@@ -4,7 +4,7 @@ from typing import List, Tuple
 import numpy as np
 
 from app.common.dto.DataRequestDto import DataRequestDto
-from app.fitting_processors.ptr_processors_builder import FittingProcessorBuilder
+from app.processors.ptr_processors_builder import FittingProcessorBuilder
 from app.models.ptr_config import PTRConfig
 
 router = APIRouter()

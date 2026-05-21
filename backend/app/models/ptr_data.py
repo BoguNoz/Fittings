@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-
 import numpy as np
 
 @dataclass
 class PTRData:
-    frequency: np.ndarray
+    frequency: np.ndarray   # kHz
     amplitude: np.ndarray
     phase_deg: np.ndarray
+    sample_name: str = ""

@@ -1,0 +1,108 @@
+import numpy as np
+from scipy.optimize import least_squares
+from scipy.stats import qmc
+from tqdm import tqdm
+
+from app.methods.simulations import simulations_ptr_hankel
+from app.models.ptr_fit_result import PTRFitResult
+
+
+def fit_ptr_multi_start(frequency_vector, exp_amp, exp_phase, n_starts=25, **phys_params):
+    best_resnorm = np.inf
+    best_pfit = None
+    all_results = []
+
+    lb = [np.log10(0.05), np.log10(1.0), np.log10(1e-9), np.log10(0.5)]
+    ub = [np.log10(1.0),  np.log10(6.0), np.log10(1e-5), np.log10(2.5)]
+
+    for i in tqdm(range(n_starts), desc="Multi-start fitting"):
+        p0 = _generate_initial_guess(i, n_starts)
+        try:
+            res = least_squares(
+                _ptr_residual,
+                p0,
+                bounds=(lb, ub),
+                args=(frequency_vector, exp_amp, exp_phase),
+                kwargs=phys_params,
+                max_nfev=1500,
+                ftol=1e-8
+            )
+            cost = 2 * res.cost
+            all_results.append({'pfit': res.x.copy(), 'cost': cost})
+
+            if cost < best_resnorm:
+                best_resnorm = cost
+                best_pfit = res.x.copy()
+        except:
+            continue
+
+    # Best solution reconstruction
+    k2 = 10 ** best_pfit[0]
+    anisotropy = 10 ** best_pfit[1]
+    r32 = 10 ** best_pfit[2]
+    k3 = 10 ** best_pfit[3]
+    rhoc = phys_params.get('rhoc', 2.0e6)
+    alfa2 = k2 / rhoc
+    k_parallel = k2 * anisotropy
+
+    _, y_complex = simulations_ptr_hankel(
+        frequency_vector, k2, alfa2, r32, k3, anisotropy, **phys_params
+    )
+
+    exp_complex = exp_amp * np.exp(1j * np.unwrap(np.deg2rad(exp_phase)))
+    G = np.vdot(y_complex, exp_complex) / np.vdot(y_complex, y_complex)
+    model_scaled = G * y_complex
+
+    return PTRFitResult(
+        k2=k2,
+        alfa2=alfa2,
+        r32=r32,
+        k3=k3,
+        phi0_deg=np.angle(G, deg=True),
+        anisotropy=anisotropy,
+        k_parallel=k_parallel,
+        res_norm=best_resnorm,
+        best_resnorm=best_resnorm,
+        model_amp=np.abs(model_scaled),
+        exp_amp=exp_amp,
+        model_phase_deg=np.angle(model_scaled, deg=True),
+        exp_phase_deg=exp_phase,
+        pfit=best_pfit,
+        frequency_vector=frequency_vector,
+        all_results=all_results,
+        n_starts=n_starts
+    )
+
+
+def _generate_initial_guess(i, n_starts):
+    if i == 0:
+        return np.array([np.log10(0.22), np.log10(2.0), np.log10(2e-7), np.log10(1.0)])
+    sampler = qmc.LatinHypercube(d=4, seed=42 + i)
+    sample = sampler.random(1)[0]
+    ranges = np.array([
+        [np.log10(0.08), np.log10(0.6)],
+        [np.log10(1.0), np.log10(5.0)],
+        [np.log10(5e-9), np.log10(8e-6)],
+        [np.log10(0.6), np.log10(1.8)]
+    ])
+    return ranges[:,0] + sample * (ranges[:,1] - ranges[:,0])
+
+
+def _ptr_residual(p, freq, exp_amp, exp_phase, **params):
+    k2 = 10**p[0]
+    aniso = 10**p[1]
+    r32 = 10**p[2]
+    k3 = 10**p[3]
+    alfa2 = k2 / params.get('rhoc', 2.0e6)
+
+    _, model_complex = simulations_ptr_hankel(freq, k2, alfa2, r32, k3, aniso, **params)
+
+    exp_c = exp_amp * np.exp(1j * np.unwrap(np.deg2rad(exp_phase)))
+    G = np.vdot(model_complex, exp_c) / np.vdot(model_complex, model_complex)
+    model_s = G * model_complex
+
+    w = (freq / freq.max()) ** params.get('weight_exponent', 0.8)
+    diff = (model_s - exp_c) / np.maximum(np.abs(exp_c), 1e-12)
+    diff *= w[:, None]
+
+    return np.concatenate([diff.real, params.get('phase_weight', 1.2) * diff.imag])

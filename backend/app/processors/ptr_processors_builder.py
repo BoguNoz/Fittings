@@ -3,7 +3,7 @@ from typing import Union, BinaryIO
 
 import numpy as np
 
-from app.fitting_processors.ptr_processor import PTRProcessor
+from app.processors.ptr_processor import PTRProcessor
 from app.models.ptr_config import PTRConfig
 from app.models.ptr_data import PTRData
 

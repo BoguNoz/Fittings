@@ -1,8 +1,7 @@
 import numpy as np
 
-from app.methods.correct_ptr_data import correct_ptr_data
-from app.methods.fit_ptr import fit_ptr
-from app.methods.fit_ptr_multi_start import fit_ptr_multi_start
+from app.methods.corrections import correct_ptr_data
+from app.methods.fitting import fit_ptr_multi_start
 from app.models.ptr_config import PTRConfig
 from app.models.ptr_data import PTRData
 from app.models.ptr_fit_result import PTRFitResult
@@ -36,32 +35,35 @@ class PTRProcessor:
         return self
 
     def build_and_fit(self) -> PTRFitResult:
+        """Build corrected data and run multi-start fitting."""
+        # 1. Preprocessing
         freq, amp, phase = correct_ptr_data(
             self._data.frequency,
             self._data.amplitude,
             self._data.phase_deg,
             True
         )
-        # freq =  self._data.frequency
-        # amp = self._data.amplitude
-        # phase = self._data.phase_deg
-        freq = freq * 1000
-        amp = amp * 1000
 
+        # 2. Scale frequency to Hz (as expected by fitting functions)
+        freq_hz = freq * 1000
+
+        # 3. Run fitting
         return fit_ptr_multi_start(
-            frequency_vector=freq,
-            exp_amp=amp,
+            frequency_vector=freq_hz,  # teraz w Hz
+            exp_amp=amp,  # bez mnożenia przez 1000
             exp_phase=phase,
             n_starts=self._starting_points_count,
+
+            # Parametry z config
             l2=self._config.l2,
             k1=self._config.k1,
             l1=self._config.l1,
             alfa1=self._config.alfa1,
             alfa3=self._config.alfa3,
             r21=self._config.r21,
-            weight_exponent=self._config.weight_exponent,
-            phase_weight=self._config.phase_weight,
+            rhoc=self._config.rhoc,
             d_pump=self._config.d_pump,
             Q=self._config.Q,
-            rhoc=self._config.rhoc,
+            weight_exponent=self._config.weight_exponent,
+            phase_weight=self._config.phase_weight,
         )

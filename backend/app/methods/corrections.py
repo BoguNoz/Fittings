@@ -1,22 +1,20 @@
 import numpy as np
 from scipy.signal import medfilt
 
-def correct_ptr_data(freq_khz: np.ndarray, amp: np.ndarray, phase_deg: np.ndarray, max_freq: float = 2000):
+def correct_ptr_data(freq_khz, amp, phase_deg, max_freq=2000):
     """
-    Przygotowanie danych eksperymentalnych.
-
-    KROK 1 (wg promotora): Faza ze stopni przeliczona na radiany (wewnątrz funkcji)
-    - tutaj również wykonujemy unwrap i usuwanie outlierów, ale **kluczowa konwersja
-      deg -> rad zostanie wykorzystana później przy tworzeniu liczby zespolonej**.
+    KROK 1: Faza ze stopni na radiany (wewnętrznie do unwrapowania).
+    Zwracamy fazę w stopniach (już po rozwinięciu), bo później i tak
+    przy tworzeniu liczby zespolonej użyjemy np.deg2rad().
     """
     freq_hz = freq_khz * 1000.0
 
-    # Konwersja na radiany do poprawnego unwrapowania
+    # unwrap po konwersji na radiany
     phase_rad = np.deg2rad(phase_deg)
     phase_unwrapped = np.unwrap(phase_rad)
-    phase_corr_deg = np.rad2deg(phase_unwrapped)   # faza ciągła w stopniach
+    phase_deg_corr = np.rad2deg(phase_unwrapped)
 
-    # Usuń ewidentne outliery w amplitudzie
+    # filtracja odstających punktów
     if len(amp) > 10:
         window = min(7, len(amp) // 2 * 2 + 1)
         amp_smooth = medfilt(amp, kernel_size=window)
@@ -24,12 +22,11 @@ def correct_ptr_data(freq_khz: np.ndarray, amp: np.ndarray, phase_deg: np.ndarra
         mask = rel_diff < 0.08
         freq_hz = freq_hz[mask]
         amp = amp[mask]
-        phase_corr_deg = phase_corr_deg[mask]
+        phase_deg_corr = phase_deg_corr[mask]
 
-    # Ogranicz maksymalną częstotliwość
     mask = freq_hz <= max_freq * 1000
     freq_hz = freq_hz[mask]
     amp = amp[mask]
-    phase_corr_deg = phase_corr_deg[mask]
+    phase_deg_corr = phase_deg_corr[mask]
 
-    return freq_hz, amp, phase_corr_deg
+    return freq_hz, amp, phase_deg_corr

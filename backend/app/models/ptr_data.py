@@ -5,4 +5,4 @@ import numpy as np
 class PTRData:
     frequency: np.ndarray   # w kHz
     amplitude: np.ndarray
-    phase_deg: np.ndarray   # faza w stopniach
+    phase_deg: np.ndarray

@@ -7,16 +7,6 @@ from app.models.ptr_config import PTRConfig
 
 # ============================== 1. CONFIGURATION ==============================
 config = PTRConfig(
-    l2=240e-9,          # <--- ZMIEŃ na rzeczywistą grubość swojej próbki!
-    k1=200.0,
-    l1=50e-9,
-    alfa1=8.2e-5,
-    alfa3=0.5e-7,
-    r21=1.0e-8,
-    d_pump=2.42e-6,
-    Q=1.0,
-    weight_exponent=0.6,
-    phase_weight=15.0    # zwiększ wagę fazy
 )
 
 # ============================== 2. DATA LOADING & FITTING ==============================
@@ -36,22 +26,22 @@ print(f"k_parallel           : {result.k_parallel:.4f} W/(m·K)")
 print(f"alfa2                : {result.alfa2:.2e} m²/s")
 print(f"r32 (boundary)       : {result.r32:.2e} m²·K/W")
 print(f"Anisotropy           : {result.anisotropy:.2f}")
-print(f"Phase offset (phi0)  : {result.phi0_deg:.3f} deg")
 print(f"Residual norm        : {result.res_norm:.6f}")
-print(f"Best resnorm         : {result.best_resnorm:.6f}")
+print(f"Best resnorm         : {result.res_norm:.6f}")
 
 # ============================== 4. PLOTTING ==============================
 def plot_ptr_result(result, filename=None):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
 
-    ax1.loglog(result.frequency_vector, result.exp_amp, 'o', markersize=4, label='Experiment')
-    ax1.loglog(result.frequency_vector, result.model_amp, '-', lw=2, label='Model')
+    # Użyj result.frequency_hz zamiast frequency_vector
+    ax1.loglog(result.frequency_hz, result.exp_amp, 'o', markersize=4, label='Experiment')
+    ax1.loglog(result.frequency_hz, result.model_amp, '-', lw=2, label='Model')
     ax1.set_ylabel('Amplitude')
     ax1.legend()
     ax1.grid(True, which='both', ls='--')
 
-    ax2.semilogx(result.frequency_vector, result.exp_phase_deg, 'o', markersize=4, label='Experiment')
-    ax2.semilogx(result.frequency_vector, result.model_phase_deg, '-', lw=2, label='Model')
+    ax2.semilogx(result.frequency_hz, result.exp_phase_deg, 'o', markersize=4, label='Experiment')
+    ax2.semilogx(result.frequency_hz, result.model_phase_deg, '-', lw=2, label='Model')
     ax2.set_xlabel('Frequency (Hz)')
     ax2.set_ylabel('Phase (deg)')
     ax2.legend()
@@ -68,7 +58,7 @@ plot_ptr_result(result)
 print("results:", result)
 
 # Po fitowaniu dodaj:
-print("Frequency range:", result.frequency_vector.min(), "–", result.frequency_vector.max())
+print("Frequency range:", result.frequency_hz.min(), "–", result.frequency_hz.max())
 print("Phase at highest freq - Exp:", result.exp_phase_deg[-5:].mean())
 print("Phase at highest freq - Model:", result.model_phase_deg[-5:].mean())
 

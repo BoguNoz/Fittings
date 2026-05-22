@@ -2,64 +2,55 @@ import numpy as np
 from scipy.optimize import least_squares
 from scipy.stats import qmc
 from tqdm import tqdm
-from dataclasses import dataclass
 
 from .simulations import simulate_single_frequency
 from ..models.ptr_fit_result import PTRFitResult
 
+
 def ptr_residual(p, freq_hz, exp_amp, exp_phase_deg, config):
     """
-    Oblicza residua dla jednego zestawu parametrów.
-
-    Zawiera **kroki 2, 3 i 4** instrukcji promotora:
-    KROK 2: Eksperyment -> część rzeczywista i urojona (exp_complex)
-    KROK 3: Model -> część rzeczywista i urojona (y_model)
-    KROK 4: Normalizacja modelu: amplituda = amplituda / sqrt(f)  oraz  faza = faza - 45°
+    KROK 2: Obliczenie części rzeczywistej i urojonej EKSPERYMENTU.
+    KROK 3: Obliczenie części rzeczywistej i urojonej MODELU.
+    KROK 4: Normalizacja AMPLITUDY modelu: ampl /= sqrt(freq).
+    KROK 5: Normalizacja FAZY modelu: faza -= 45°.
     """
-    # Rozpakowanie parametrów (w skali log10, bez phi0)
     logk2, log_aniso, logr32, logk3 = p
-
     k2 = 10**logk2
     anisotropy = 10**log_aniso
     r32 = 10**logr32
     k3_fit = 10**logk3
     alfa2 = k2 / config.rhoc2
 
-    # ---------- KROK 3: część rzeczywista i urojona modelu ----------
+    # --- KROK 3: Surowy zespolony sygnał modelu (brak normalizacji) ---
     y_model = np.array([
-        simulate_single_frequency(2 * np.pi * f, k2, alfa2, r32, k3_fit, config, anisotropy)
+        simulate_single_frequency(2*np.pi*f, k2, alfa2, r32, k3_fit, config, anisotropy)
         for f in freq_hz
-    ])   # sygnał zespolony z modelu Henkela
+    ])
 
-    # ---------- KROK 4: normalizacja modelu wg wzoru promotora ----------
-    # amplituda / sqrt(freq)  oraz  faza - 45°
+    # --- KROK 4 i 5: Normalizacja modelu (tylko model!) ---
+    # amplituda /= sqrt(freq), faza -= 45°
     norm_factor = np.exp(-1j * np.deg2rad(45.0)) / np.sqrt(freq_hz)
     y_norm = y_model * norm_factor
 
-    # ---------- KROK 2: część rzeczywista i urojona eksperymentu ----------
+    # --- KROK 2: Zespolony sygnał eksperymentalny ---
     exp_complex = exp_amp * np.exp(1j * np.deg2rad(exp_phase_deg))
 
-    # Ważenie zależne od częstotliwości (opcjonalne, zachowane z oryginału)
+    # Ważenie (opcjonalne)
     w = (freq_hz / freq_hz.max()) ** config.weight_exponent
     diff = (y_norm - exp_complex) / np.maximum(np.abs(exp_complex), 1e-12)
     diff = diff * w
 
-    # Residua: część rzeczywista + ważona część urojona
     residuals = np.concatenate([diff.real, config.phase_weight * diff.imag])
     return residuals
 
-def fit_ptr_3d(
-        freq_hz: np.ndarray,
-        exp_amp: np.ndarray,
-        exp_phase_deg: np.ndarray,
-        config,
-        n_starts: int = 25
-):
+
+def fit_ptr_3d(freq_hz, exp_amp, exp_phase_deg, config, n_starts=25):
     """
-    KROK 5: Proces fitowania (wielostartowa optymalizacja least_squares).
-    Parametry: logk2, log_aniso, logr32, logk3  (bez dodatkowego przesunięcia fazy).
+    KROK 6: Proces fitowania (wielostartowy).
+    KROK 7: Po zakończeniu fitowania wykorzystujemy TEN SAM model
+            (drugi model) z optymalnymi parametrami do wygenerowania
+            końcowych krzywych amplitudy i fazy.
     """
-    # Granice w log10
     lb = np.array([np.log10(0.05), np.log10(1.0), np.log10(1e-9), np.log10(0.3)])
     ub = np.array([np.log10(1.5),  np.log10(10.0), np.log10(1e-5), np.log10(3.0)])
 
@@ -67,10 +58,8 @@ def fit_ptr_3d(
     best_cost = np.inf
 
     print(f"Starting multi-start optimization with {n_starts} attempts...")
-
     for i in tqdm(range(n_starts), desc="Multi-start optimization"):
         if i == 0:
-            # start z ręcznie podanych wartości
             p0 = np.array([np.log10(0.25), np.log10(2.5), np.log10(2e-7), np.log10(1.0)])
         else:
             sampler = qmc.LatinHypercube(d=4, seed=42 + i)
@@ -78,23 +67,13 @@ def fit_ptr_3d(
             p0 = lb + sample * (ub - lb)
 
         try:
-            res = least_squares(
-                ptr_residual,
-                p0,
-                bounds=(lb, ub),
-                args=(freq_hz, exp_amp, exp_phase_deg, config),
-                max_nfev=1500,
-                ftol=1e-9,
-                xtol=1e-9,
-                verbose=0
-            )
-
+            res = least_squares(ptr_residual, p0, bounds=(lb, ub),
+                                args=(freq_hz, exp_amp, exp_phase_deg, config),
+                                max_nfev=1500, ftol=1e-9, xtol=1e-9, verbose=0)
             if res.cost < best_cost and np.isfinite(res.cost):
                 best_cost = res.cost
                 best_res = res
-
-        except Exception as e:
-            print(f"  Attempt {i} failed: {type(e).__name__}")
+        except Exception:
             continue
 
     if best_res is None:
@@ -108,16 +87,14 @@ def fit_ptr_3d(
     alfa2 = k2 / config.rhoc2
     k_parallel = k2 * anisotropy
 
-    # ---------- KROK 6: Drugi model – generowanie amplitudy i fazy po fitowaniu ----------
-    # Używamy tego samego modelu Henkela z dopasowanymi parametrami
-    y_model_final = np.array([
-        simulate_single_frequency(2 * np.pi * f, k2, alfa2, r32, k3_fit, config, anisotropy)
+    # --- KROK 7: Drugi model – generowanie końcowych krzywych ---
+    y_final = np.array([
+        simulate_single_frequency(2*np.pi*f, k2, alfa2, r32, k3_fit, config, anisotropy)
         for f in freq_hz
     ])
-
-    # Stosujemy taką samą normalizację (amplituda/sqrt(f), faza-45°) aby otrzymać końcowe krzywe
+    # Stosujemy tę samą normalizację co przy fitowaniu
     norm_factor = np.exp(-1j * np.deg2rad(45.0)) / np.sqrt(freq_hz)
-    y_final_norm = y_model_final * norm_factor
+    y_final_norm = y_final * norm_factor
 
     print(f"\nBest fit achieved with cost = {best_cost:.2e}")
 
@@ -129,8 +106,8 @@ def fit_ptr_3d(
         anisotropy=anisotropy,
         k_parallel=k_parallel,
         res_norm=best_cost,
-        model_amp=np.abs(y_final_norm),               # amplituda po normalizacji
-        model_phase_deg=np.angle(y_final_norm, deg=True),  # faza po normalizacji
+        model_amp=np.abs(y_final_norm),
+        model_phase_deg=np.angle(y_final_norm, deg=True),
         exp_amp=exp_amp,
         exp_phase_deg=exp_phase_deg,
         frequency_hz=freq_hz

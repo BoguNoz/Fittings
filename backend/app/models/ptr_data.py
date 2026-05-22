@@ -3,7 +3,6 @@ import numpy as np
 
 @dataclass
 class PTRData:
-    frequency: np.ndarray   # kHz
+    frequency: np.ndarray   # w kHz
     amplitude: np.ndarray
-    phase_deg: np.ndarray
-    sample_name: str = ""
+    phase_deg: np.ndarray   # faza w stopniach

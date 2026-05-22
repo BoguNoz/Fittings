@@ -7,17 +7,16 @@ from app.models.ptr_config import PTRConfig
 
 # ============================== 1. CONFIGURATION ==============================
 config = PTRConfig(
-    l2=240e-9,           # dostosuj do rzeczywistej grubości próbki!
+    l2=240e-9,          # <--- ZMIEŃ na rzeczywistą grubość swojej próbki!
     k1=200.0,
     l1=50e-9,
     alfa1=8.2e-5,
     alfa3=0.5e-7,
     r21=1.0e-8,
-    rhoc=2.0e6,
     d_pump=2.42e-6,
     Q=1.0,
-    weight_exponent=0.8,      # zmienione na lepszą wartość
-    phase_weight=1.2
+    weight_exponent=0.6,
+    phase_weight=15.0    # zwiększ wagę fazy
 )
 
 # ============================== 2. DATA LOADING & FITTING ==============================
@@ -64,6 +63,13 @@ def plot_ptr_result(result, filename=None):
     plt.show()
 
 
-plot_ptr_result(result, filename=f"fit_{result.sample_name if hasattr(result,'sample_name') else 'result'}.png")
+plot_ptr_result(result)
+
+print("results:", result)
+
+# Po fitowaniu dodaj:
+print("Frequency range:", result.frequency_vector.min(), "–", result.frequency_vector.max())
+print("Phase at highest freq - Exp:", result.exp_phase_deg[-5:].mean())
+print("Phase at highest freq - Model:", result.model_phase_deg[-5:].mean())
 
 print("Successfully completed fitting and plotting.")

@@ -1,28 +1,24 @@
 from dataclasses import dataclass
 
-
 @dataclass
 class PTRConfig:
-    """Configuration for PTR Hankel Transfer Matrix model."""
-    l2: float = 240e-9  # PEDOT:PSS thickness [m]
-
-    # Transducer (Al)
-    k1: float = 200.0
-    l1: float = 50e-9
+    # Warstwy
+    l1: float = 50e-9      # grubość transducera (Al)
+    k1: float = 200.0      # k transducera
     alfa1: float = 8.2e-5
 
-    # Substrate (glass)
-    alfa3: float = 0.5e-7
-    k3: float = 1.0  # can be fitted
+    l2: float = 240e-9     # PEDOT:PSS
+    rhoc2: float = 2.0e6   # volumetric heat capacity
 
-    # Interfaces
+    alfa3: float = 0.5e-7  # szkło
+    k3: float = 1.0
+
+    # Interfejsy
     r21: float = 1.0e-8
-
-    # PEDOT:PSS properties
-    rhoc: float = 2.0e6  # J/m³·K
+    # r32 będzie fitowane
 
     # Laser
-    d_pump: float = 2.42e-6
+    d_pump: float = 2.42e-6  # 1/e² radius
     Q: float = 1.0
 
     # Fitting

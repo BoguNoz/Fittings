@@ -29,7 +29,7 @@ def ptr_residual(p, freq_hz, exp_amp, exp_phase_deg, config):
 
     # --- KROK 4 i 5: Normalizacja modelu (tylko model!) ---
     # amplituda /= sqrt(freq), faza -= 45°
-    norm_factor = np.exp(-1j * np.deg2rad(45.0)) / np.sqrt(freq_hz)
+    norm_factor = np.exp(-1j * np.deg2rad(45.0)) * np.sqrt(freq_hz)
     y_norm = y_model * norm_factor
 
     # --- KROK 2: Zespolony sygnał eksperymentalny ---
@@ -41,7 +41,7 @@ def ptr_residual(p, freq_hz, exp_amp, exp_phase_deg, config):
     diff = diff * w
 
     residuals = np.concatenate([diff.real, config.phase_weight * diff.imag])
-    return residuals
+    return residuals #
 
 
 def fit_ptr_3d(freq_hz, exp_amp, exp_phase_deg, config, n_starts=25):
@@ -93,8 +93,18 @@ def fit_ptr_3d(freq_hz, exp_amp, exp_phase_deg, config, n_starts=25):
         for f in freq_hz
     ])
     # Stosujemy tę samą normalizację co przy fitowaniu
-    norm_factor = np.exp(-1j * np.deg2rad(45.0)) / np.sqrt(freq_hz)
-    y_final_norm = y_final * norm_factor
+    norm_factor = np.exp(-1j * np.deg2rad(45.0)) * np.sqrt(freq_hz)
+    y_final = y_final * norm_factor
+
+    # # --- KROK 7: Drugi model – generowanie końcowych krzywych ---
+    # y_final = np.array([
+    #     simulate_ptr_single_frequency(2 * np.pi * f, k2, alfa2, r32, k3_fit, config)
+    #     for f in freq_hz
+    # ])
+    #
+    # # Stosujemy tę samą normalizację co przy fitowaniu
+    # norm_factor = np.exp(-1j * np.deg2rad(45.0)) / np.sqrt(freq_hz)
+    # y_final = y_final * norm_factor
 
     print(f"\nBest fit achieved with cost = {best_cost:.2e}")
 
@@ -106,8 +116,8 @@ def fit_ptr_3d(freq_hz, exp_amp, exp_phase_deg, config, n_starts=25):
         anisotropy=anisotropy,
         k_parallel=k_parallel,
         res_norm=best_cost,
-        model_amp=np.abs(y_final_norm),
-        model_phase_deg=np.angle(y_final_norm, deg=True),
+        model_amp=np.abs(y_final),
+        model_phase_deg=np.angle(y_final, deg=True),
         exp_amp=exp_amp,
         exp_phase_deg=exp_phase_deg,
         frequency_hz=freq_hz

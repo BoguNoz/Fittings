@@ -13,9 +13,9 @@ config = PTRConfig(
 print("Starting PTR data processing...\n")
 
 result = (FittingProcessorBuilder()
-            .load_dat_file("data/PEDO-25.dat", sample_name="X32B")
+            .load_dat_file("data/PEDO-1.dat", sample_name="X32B")
             .load_config(config)
-            .set_starting_point_count(15)      # więcej startów = lepsze szanse
+            .set_starting_point_count(3)
             .build()
             .process())
 
@@ -28,12 +28,11 @@ print(f"r32 (boundary)       : {result.r32:.2e} m²·K/W")
 print(f"Anisotropy           : {result.anisotropy:.2f}")
 print(f"Residual norm        : {result.res_norm:.6f}")
 print(f"Best resnorm         : {result.res_norm:.6f}")
-
+# analizować r2/ therma defisidy cros play / resistance. Na sztywno azinotropia / wraca r^2 i rezyduła
 # ============================== 4. PLOTTING ==============================
 def plot_ptr_result(result, filename=None):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
 
-    # Użyj result.frequency_hz zamiast frequency_vector
     ax1.loglog(result.frequency_hz, result.exp_amp, 'o', markersize=4, label='Experiment')
     ax1.loglog(result.frequency_hz, result.model_amp, '-', lw=2, label='Model')
     ax1.set_ylabel('Amplitude')
@@ -57,7 +56,6 @@ plot_ptr_result(result)
 
 print("results:", result)
 
-# Po fitowaniu dodaj:
 print("Frequency range:", result.frequency_hz.min(), "–", result.frequency_hz.max())
 print("Phase at highest freq - Exp:", result.exp_phase_deg[-5:].mean())
 print("Phase at highest freq - Model:", result.model_phase_deg[-5:].mean())

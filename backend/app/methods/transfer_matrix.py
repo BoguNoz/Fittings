@@ -1,24 +1,37 @@
 import numpy as np
 
-def thermal_wavevector(k_perp: float, alpha_perp: float, k_in: float, lam: float, omega: float):
-    """Wektor falowy (równanie (12) z artykułu)"""
-    return np.sqrt(1j * omega / alpha_perp + (k_in / k_perp) * lam**2 + 0j)
 
-def layer_transfer_matrix(k: float, alpha: float, thickness: float, lam: float, omega: float,
-                          k_in=None):
-    if thickness < 1e-12:
-        return np.eye(2, dtype=complex)
-    if k_in is None:
-        k_in = k
-    q = thermal_wavevector(k, alpha, k_in, lam, omega)
-    gamma = q * thickness
-    if np.abs(gamma) > 25:
-        Z = 1.0 / (k * q)
-        return np.array([[1.0, Z], [1.0 / Z, 1.0]], dtype=complex)
-    tanh_g = np.tanh(gamma)
-    Z = 1.0 / (k * q)
-    return np.array([[1.0, Z * tanh_g],
-                     [tanh_g / Z, 1.0]], dtype=complex)
+def thermal_wavevector(lam: float, omega: float, alfa: float, anisotropy: float = 1.0) -> complex:
+    """
+    Oblicza zespoloną liczbę falową fali cieplnej dla warstwy.
 
-def interface_matrix(R: float):
-    return np.array([[1.0, R], [0.0, 1.0]], dtype=complex)
+    Parametry:
+    lam - zmienna transformaty Hankela (radialna liczba falowa) [1/m]
+    omega - pulsacja [rad/s]
+    alfa - dyfuzyjność cieplna [m^2/s]
+    anisotropy - stosunek przewodności radialnej do pionowej (K_r/K_z) dla warstwy anizotropowej
+    """
+    return np.sqrt(anisotropy * lam ** 2 + 1j * omega / alfa)
+
+
+def layer_transfer_matrix(sigma: complex, k: float, d: float) -> np.ndarray:
+    """
+    Macierz transferowa dla jednorodnej warstwy o grubości d.
+    Łączy wektor [T; q] na górze i dole warstwy.
+    Uwaga: q = -k ∂T/∂z (strumień ciepła w kierunku +z).
+    """
+    ch = np.cosh(sigma * d)
+    sh = np.sinh(sigma * d)
+    # Standardowa macierz:
+    # [ T_top ]   [  ch     -sh/(k*sigma) ] [ T_bottom ]
+    # [ q_top ] = [ -k*sigma*sh     ch    ] [ q_bottom ]
+    M = np.array([
+        [ch, -sh / (k * sigma)],
+        [-k * sigma * sh, ch]
+    ], dtype=complex)
+    return M
+
+
+def interface_matrix(R: float) -> np.ndarray:
+    """Macierz dla interfejsu z oporem termicznym R."""
+    return np.array([[1, R], [0, 1]], dtype=float)

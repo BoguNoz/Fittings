@@ -77,5 +77,6 @@ def simulate_single_frequency(
 
     # Temperatura powierzchniowa (uwzględnienie mocy całkowitej i konwencji znaku)
     theta_surface = (-config.Q / (2 * np.pi)) * integral
+
     return theta_surface
 

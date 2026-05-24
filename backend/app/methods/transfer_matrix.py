@@ -11,7 +11,7 @@ def thermal_wavevector(lam: float, omega: float, alfa: float, anisotropy: float 
     alfa - dyfuzyjność cieplna [m^2/s]
     anisotropy - stosunek przewodności radialnej do pionowej (K_r/K_z) dla warstwy anizotropowej
     """
-    return np.sqrt(anisotropy * lam ** 2 + 1j * omega / alfa)
+    return np.sqrt(anisotropy * (lam ** 2 + 1j * omega / alfa))
 
 
 def layer_transfer_matrix(sigma: complex, k: float, d: float) -> np.ndarray:
@@ -34,4 +34,4 @@ def layer_transfer_matrix(sigma: complex, k: float, d: float) -> np.ndarray:
 
 def interface_matrix(R: float) -> np.ndarray:
     """Macierz dla interfejsu z oporem termicznym R."""
-    return np.array([[1, R], [0, 1]], dtype=float)
+    return np.array([[1, R], [0, 1]], dtype=complex)

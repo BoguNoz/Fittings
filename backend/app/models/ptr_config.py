@@ -12,5 +12,6 @@ class PTRConfig:
     r21: float = 1.0e-8
     d_pump: float = 2.40e-6
     Q: float = 1.0
+    anisotropy: float = 1.2
     weight_exponent: float = 0
     phase_weight: float = 0

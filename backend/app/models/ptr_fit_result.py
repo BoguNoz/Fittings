@@ -10,6 +10,8 @@ class PTRFitResult:
     anisotropy: float
     k_parallel: float
     res_norm: float
+    r2_amp: float        # DODANE: R^2 dla amplitudy
+    r2_phase: float      # DODANE: R^2 dla fazy
     model_amp: np.ndarray
     model_phase_deg: np.ndarray
     exp_amp: np.ndarray

@@ -6,7 +6,7 @@ class PTRConfig:
     k1: float = 150.0
     alfa1: float = 2.1e-5
     l2: float = 240e-9
-    rhoc2: float = 2.0e6
+    rhoc2: float = 1.3e6
     alfa3: float = 0.5e-7
     k3: float = 1.0
     r21: float = 1.0e-8

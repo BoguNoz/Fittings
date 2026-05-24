@@ -53,7 +53,7 @@ def fit_ptr_3d(freq_hz, exp_amp, exp_phase_deg, config, n_starts=25):
     # Oczekiwane wartości (ręcznie dobrane)
     k2_exp = 0.18
     r32_exp = 1e-8
-    A_exp = 1e-5               # <-- ZMIEŃ na właściwą wartość z Twojego ręcznego dopasowania!
+    A_exp = 1e-5
     phi_exp = np.deg2rad(-320) # lub np.deg2rad(40) – obie są poprawne, wybierz tę bliższą
 
     p0_expected = np.array([np.log10(k2_exp), np.log10(r32_exp), np.log10(A_exp), phi_exp])

@@ -1,6 +1,7 @@
 # ========== 1. Parametry literaturowe dla 240 nm PEDOT:PSS ==========
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.optimize import curve_fit
 
 from app.methods.simulations import simulate_single_frequency   # usunięto nieistniejący import
 from app.models.ptr_config import PTRConfig
@@ -9,13 +10,13 @@ k_cross = 0.18          # cross-plane (W/mK)
 k_inplane = 0.35        # in-plane (W/mK)
 anisotropy = k_inplane / k_cross   # ≈ 1.94
 alfa2 = 1.35e-7         # dyfuzyjność cross-plane (m²/s)
-r32 = 1e-8              # opór PEDOT/szkło (m²K/W) – szacunkowy
+r32 = 1e-8             # opór PEDOT/szkło (m²K/W) – szacunkowy
 k3 = 1.0                # przewodność szkła (W/mK)
 
 config = PTRConfig()
 
 # ========== 2. Zakres częstotliwości zgodny z eksperymentem ==========
-freq_hz = np.logspace(0, 3.3, 50)   # od 1 Hz do 2000 Hz
+freq_hz = np.logspace(0, 3.3, 500)   # od 1 Hz do 2000 Hz
 omega = 2 * np.pi * freq_hz
 
 print("Obliczanie modelu...")
@@ -24,11 +25,15 @@ print("Gotowe.")
 
 
 # Normalizacja (taka sama jak poprzednio: exp(-j45°) * sqrt(f))
-norm_factor = np.exp(1j * np.deg2rad(45.0)) * np.sqrt(freq_hz)
+offset_deg = 170.0  # Wartość, którą musisz dopasować
+norm_factor = np.exp(-1j * np.deg2rad(150.0 + offset_deg)) * np.sqrt(freq_hz)
 y_final_norm = signal * norm_factor
+
 
 amp_model = np.abs(y_final_norm)
 phase_model = np.angle(y_final_norm, deg=True)
+
+phase_model_shifted = phase_model + 170.0
 
 
 # ========== 3. Dane eksperymentalne (z podanej tabeli) ==========

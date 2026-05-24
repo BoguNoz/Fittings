@@ -16,7 +16,7 @@ print("Starting PTR data processing...\n")
 result = (FittingProcessorBuilder()
             .load_dat_file("data/PEDO-1.dat", sample_name="X32B")
             .load_config(config)
-            .set_starting_point_count(3) # Ilość punktów startowych algorytmu
+            .set_starting_point_count(20) # Ilość punktów startowych algorytmu
             .build()
             .process())
 

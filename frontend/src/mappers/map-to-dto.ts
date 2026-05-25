@@ -24,6 +24,7 @@ export const mapToDataRequest = (store: BaseStore) => {
         k1: getNumberOrDefault(configRegisteredFields.k1, 150.0),
         alfa1: getNumberOrDefault(configRegisteredFields.alfa1, 2.1e-5),
         l2: getNumberOrDefault(configRegisteredFields.l2, 240e-9),
+        rhoc2: getNumberOrDefault(configRegisteredFields.rhoc2, 1.3e-6),
         alfa3: getNumberOrDefault(configRegisteredFields.alfa3, 0.5e-7),
         k3: getNumberOrDefault(configRegisteredFields.k3, 1),
         r21: getNumberOrDefault(configRegisteredFields.r21, 1.0e-8),

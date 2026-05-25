@@ -48,13 +48,13 @@ async def ptr_fitting(
         k3=k3,
         d_pump=d_pump,
         Q=Q,
-        anisotropy=anisotropy,
+        anisotropy=float(anisotropy),
         r21=r21,
         phase_weight=weight,
     )
 
     result = (FittingProcessorBuilder()
-              .load_dat_data(file_source=file, sample_name=sample_name)
+              .load_dat_data(file_source=file)
               .load_config(config)
               .set_starting_point_count(n_start)
               .build()

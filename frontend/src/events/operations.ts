@@ -28,6 +28,7 @@ export const sendPtrRequest = (formStore: FormStoreInterface): BaseOperationFn =
         formData.append('k1', request.k1.toString());
         formData.append('alfa1', request.alfa1.toString());
         formData.append('l2', request.l2.toString());
+        formData.append('rhoc2', request.rhoc2.toString());
         formData.append('alfa3', request.alfa3.toString());
         formData.append('k3', request.k3.toString());
         formData.append('r21', request.r21.toString());
@@ -37,7 +38,7 @@ export const sendPtrRequest = (formStore: FormStoreInterface): BaseOperationFn =
         formData.append('weight', String(request.weight));
         formData.append('sample_name', request.sample_name);
         formData.append('file', request.file);
-        formData.append('n_stats', request.n_starts.toString());
+        formData.append('n_start', request.n_starts.toString());
 
         await formStore.fetchPtrResults(formData);
 

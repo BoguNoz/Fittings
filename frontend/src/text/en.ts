@@ -53,6 +53,10 @@ export default {
 
         useFullHankelModelLabel: "Use Full Hankel Transform Model",
         useFullHankelModelDescription: "If enabled, uses the full 3D radial heat flow model (Hankel transform) which accounts for Gaussian beam profile and in-plane heat diffusion. If disabled, uses the simplified 1D thermal wave model (faster, but less accurate for beam size effects).",
+
+        nStartsLabel: "Number of Optimization Starts",
+        nStartsDescription: "Defines the number of independent initial points for the global optimization algorithm. Increasing this value enhances the probability of finding the global minimum in a complex, multi-dimensional parameter space.",
+
     },
 
     ptrConfig: {
@@ -86,11 +90,41 @@ export default {
         k2Label: "Thermal Conductivity (K2)",
         k2Description: "In-plane or cross-plane thermal conductivity of the layer in W/(m·K).",
 
+        rhoc2Label: "Volumetric Heat Capacity (ρC2)",
+        rhoc2Description: "Volumetric heat capacity of the film (Layer 2) in J/(m³·K).",
+
+        k3Label: "Thermal Conductivity Substrate (K3)",
+        k3Description: "Thermal conductivity of the substrate (e.g., glass) in W/(m·K).",
+
+        dPumpLabel: "Pump Beam Diameter (d_pump)",
+        dPumpDescription: "Diameter of the modulated laser beam (pump) at the sample surface, in meters (e.g., 2.4e-6).",
+
+        qLabel: "Heating Power (Q)",
+        qDescription: "Intensity or total power of the modulated pump beam, typically normalized or in Watts.",
+
+        anisotropyLabel: "Thermal Anisotropy Factor",
+        anisotropyDescription: "The ratio of in-plane to cross-plane thermal conductivity (K_in / K_cross) for the anisotropic layer.",
+
         weightLabel: "High-Frequency Weighting Exponent",
         weightDescription: "Power-law exponent used to weight residuals: weight = (f / f_max)^exponent. Increases importance of high-frequency points where thermal diffusion length is shorter. Controls balance between low- and high-frequency fit quality.",
     },
 
     ptrFitResult: {
+        kParallelLabel: "Calculated In-plane Conductivity",
+        kParallelDescription: "Derived thermal conductivity in the in-plane direction, calculated as k_cross × anisotropy.",
+
+        r2AmpLabel: "Amplitude Fit Goodness (R²)",
+        r2AmpDescription: "Coefficient of determination (R²) comparing the modeled amplitude to the experimental data.",
+
+        r2PhaseLabel: "Phase Fit Goodness (R²)",
+        r2PhaseDescription: "Coefficient of determination (R²) comparing the modeled phase to the experimental data.",
+
+        anisotropyLabel: "Anisotropy Ratio",
+        anisotropyDescription: "The ratio of in-plane to cross-plane thermal conductivity (K_parallel / K_cross).",
+
+        k3Label: "Substrate Thermal Conductivity",
+        k3Description: "Thermal conductivity of the substrate (Layer 3) used during the simulation, in W/(m·K).",
+
         sectionTitle: "PTR Fitting Results",
         sectionDescription: "Container holding the results of the photothermal radiometry (PTR) model fitting, including optimized thermal parameters, model curves, and fit diagnostics.",
 

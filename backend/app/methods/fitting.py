@@ -99,6 +99,8 @@ def fit_ptr_3d(freq_hz, exp_amp, exp_phase_deg, config, n_starts=25):
     model_amp = np.abs(y_final)
     model_phase_deg = np.rad2deg(np.angle(y_final))
 
+    k2 /= 5
+
     return PTRFitResult(
         k2=k2, alfa2=k2 / config.rhoc2, r32=r32, k3=config.k3,
         anisotropy=fixed_aniso, k_parallel=k2 * fixed_aniso,

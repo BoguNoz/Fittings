@@ -3,20 +3,7 @@ import {lang} from "../../text/utils/lang.ts";
 import {formStore} from "../../stores/form-store.ts";
 
 
-// #region PTR Amplitude
 const text = lang();
-const al = createFieldPlaceholders({amplitudeLinear: "amplitudeLinear"}, text.ptrPlots);
-
-al.amplitudeLinear.render = true
-al.amplitudeLinear.dataSource = () => {
-    return formStore.ptrData?.amplitude_data ?? [];
-};
-al.amplitudeLinear.deconstructor = (callback: () => void) => {
-    return formStore.subscribeToField("amplitudeLinear", callback);
-};
-
-export const amplitudeLinearField = buildFields(al);
-// #endregion PTR Amplitude
 
 // #region Amplitude
 const nal = createFieldPlaceholders({normalizedAmplitudeLog: "normalizedAmplitudeLog"}, text.ptrPlots);

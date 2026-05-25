@@ -29,15 +29,6 @@ const LineChartCard = composite((props: BaseCompositeInterface) => {
             <ScrollArea className="h-full w-full rounded-md border-none">
                 <CardContent className="flex flex-col items-center gap-8 p-6">
                     <ChartComposite
-                        compositeId={registeredAppComposites.amplitudeLinearChart}
-                        compositeStore={props.compositeStore}
-                        store={props.store}
-                        labels={["Model", "Experiment"]}
-                        palette={["#4f46e5", "#db2777"]}
-                        legends={true}
-                    />
-
-                    <ChartComposite
                         compositeId={registeredAppComposites.normalizedAmplitudeLogChart}
                         compositeStore={props.compositeStore}
                         store={props.store}

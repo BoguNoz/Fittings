@@ -24,17 +24,20 @@ export const sendPtrRequest = (formStore: FormStoreInterface): BaseOperationFn =
         }
 
         const formData = new FormData();
-        formData.append('file', request.file); // To jest obiekt File
-        formData.append('k1', request.k1.toString());
         formData.append('l1', request.l1.toString());
-        formData.append('l2', request.l2.toString());
+        formData.append('k1', request.k1.toString());
         formData.append('alfa1', request.alfa1.toString());
-        formData.append('alfa2', request.alfa2.toString());
+        formData.append('l2', request.l2.toString());
         formData.append('alfa3', request.alfa3.toString());
+        formData.append('k3', request.k3.toString());
         formData.append('r21', request.r21.toString());
-        formData.append('sample_name', request.sample_name);
-        formData.append('use_hankel', String(request.use_hankel));
+        formData.append('d_pump', request.d_pump.toString());
+        formData.append('Q', request.Q.toString());
+        formData.append('anisotropy', request.anisotropy.toString());
         formData.append('weight', String(request.weight));
+        formData.append('sample_name', request.sample_name);
+        formData.append('file', request.file);
+        formData.append('n_stats', request.n_starts.toString());
 
         await formStore.fetchPtrResults(formData);
 

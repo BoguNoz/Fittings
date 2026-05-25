@@ -41,14 +41,16 @@ export class FormStore extends BaseStore {
             console.log(this.ptrData)
 
             this.notifyFieldChanged("phase");
-            this.notifyFieldChanged("amplitudeLinear");
             this.notifyFieldChanged("normalizedAmplitudeLog");
 
+            this.setFieldValue(resultFormRegisteredFields.anisotropy, this.ptrData?.results.anisotropy)
             this.setFieldValue(resultFormRegisteredFields.k2, this.ptrData?.results.k2)
-            this.setFieldValue(resultFormRegisteredFields.alfa2r, this.ptrData?.results.alfa2)
+            this.setFieldValue(resultFormRegisteredFields.alfa2, this.ptrData?.results.alfa2)
             this.setFieldValue(resultFormRegisteredFields.r32, this.ptrData?.results.r32)
-            this.setFieldValue(resultFormRegisteredFields.phi0Deg, this.ptrData?.results.phi0_deg)
-            this.setFieldValue(resultFormRegisteredFields.resNorm, this.ptrData?.results.res_norm)
+            this.setFieldValue(resultFormRegisteredFields.kParallel, this.ptrData?.results.kParallel)
+            this.setFieldValue(resultFormRegisteredFields.r2Amp, this.ptrData?.results.r2Amp)
+            this.setFieldValue(resultFormRegisteredFields.r2Phase, this.ptrData?.results.r2Phase)
+            this.setFieldValue(resultFormRegisteredFields.resNorm, this.ptrData?.results.resNorm)
 
 
         } catch (error) {

@@ -4,16 +4,17 @@ export interface PTRChartPoint {
 }
 
 export interface PTRResults {
-    sample_name: string;
-    k2: number;
-    alfa2: number;
-    r32: number;
-    phi0_deg: number;
-    res_norm: number;
+    anisotropy: number,
+    k2: number,
+    alfa2: number,
+    r32: number,
+    kParallel: number,
+    r2Amp: number,
+    r2Phase: number,
+    resNorm: number,
 }
 
 export interface PTRChartData {
-    amplitude_data: PTRChartPoint[][];        // [ [Model series], [Experiment series] ]
     norm_amplitude_data: PTRChartPoint[][];   // Normalized log-log amplitude
     phase_data: PTRChartPoint[][];            // Phase data
     results: PTRResults;

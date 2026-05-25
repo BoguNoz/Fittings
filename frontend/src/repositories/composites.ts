@@ -8,7 +8,7 @@ import {configFields} from "./form/config-fields.ts";
 import {lang} from "../text/utils/lang.ts";
 import {ptrFields} from "./form/ptr-fields.ts";
 import {actionFields} from "./form/action-fields.ts";
-import {amplitudeLinearField, normalizedAmplitudeLogField, phaseField} from "./dashboard/chart-fields.ts";
+import {normalizedAmplitudeLogField, phaseField} from "./dashboard/chart-fields.ts";
 import {resultFormFields} from "./form/result-form.ts";
 
 const text = lang();
@@ -86,28 +86,6 @@ composites.configSection.sections = [
 ];
 composites.configSection.mode = "square-window";
 // #endregion Config Section
-
-// #region Amplitude Linear Chart
-composites.amplitudeLinearChart.render = true;
-composites.amplitudeLinearChart.renderFn = () => true;
-composites.amplitudeLinearChart.sections = [
-    {
-        type: ChartCompositeSectionType.HEADER,
-        title: text.ptrPlots.sectionTitle,
-        description: text.ptrPlots.sectionDescription,
-        disable: false,
-
-    } as BaseSectionModel,
-    {
-        type: ChartCompositeSectionType.LINE_CHART,
-        fields: amplitudeLinearField,
-        disable: false,
-
-    } as BaseSectionModel,
-];
-composites.amplitudeLinearChart.mode = "horizontal-window";
-composites.amplitudeLinearChart.size = 0.65;
-// #endregion Amplitude Linear Chart
 
 // #region Normalized Amplitude Log Chart
 composites.normalizedAmplitudeLogChart.render = true;

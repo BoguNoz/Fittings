@@ -7,7 +7,10 @@ from app.models.ptr_config import PTRConfig
 # ============================== KROK 1: KONFIGURACJA MODELU ==============================
 # Inicjalizacja podstawowej konfiguracji.
 # (Wewnętrznie anizotropia i parametry podłoża są zamrożone zgodnie z wcześniejszymi ustaleniami)
-config = PTRConfig()
+config = PTRConfig(
+    anisotropy=3,
+    l2=240e-9 * 0.8,
+)
 
 # ============================== KROK 2: ŁADOWANIE DANYCH I FITOWANIE ==============================
 print("Starting PTR data processing...\n")
@@ -20,11 +23,11 @@ result = (FittingProcessorBuilder()
             .build()
             .process())
 
-# ============================== KROK 3: RAPORT DLA PROMOTORA ==============================
+# ============================== KROK 3: RAPORT ==============================
 # Generowanie uporządkowanego podsumowania zawierającego sztywne założenia,
 # wyliczone parametry cross-plane, in-plane oraz statystyki błędu (R2 i residua).
 print("\n" + "="*45)
-print("           === RAPORT DLA PROMOTORA ===")
+print("           === RAPORT ===")
 print("="*45)
 print(f"Zadana anizotropia (sztywna)            : {result.anisotropy:.2f}")
 print(f"Przewodnictwo cross-plane (k_cross)     : {result.k2:.4f} W/(m·K)")

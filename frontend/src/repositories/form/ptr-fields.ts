@@ -1,10 +1,11 @@
 import {lang} from "../../text/utils/lang.ts";
-import {BaseFieldTypesEnum, buildFields, createFieldPlaceholders, } from "@bogunoz/simplify";
+import {BaseFieldTypesEnum, buildFields, createFieldPlaceholders, isInteger,} from "@bogunoz/simplify";
+import {isPositive} from "@bogunoz/simplify/events";
 
 export const ptrRegisteredFields = {
     dataInput: "dataInput",
     sampleName: "sampleName",
-    useFullHankelModel: "useFullHankelModel",
+    nStarts: "nStarts",
 }
 
 
@@ -21,9 +22,13 @@ fields.sampleName.fieldType = BaseFieldTypesEnum.Input
 fields.sampleName.variant = "secondary"
 // #endregion Sample Name
 
-// #region Use Full Hankel Model
-fields.useFullHankelModel.fieldType = BaseFieldTypesEnum.Switch
-fields.useFullHankelModel.variant = "secondary"
-// #endregion Use Full Hankel Model
+// #region N Starts
+fields.nStarts.fieldType = BaseFieldTypesEnum.Input
+fields.nStarts.validators = [
+    isInteger,
+    isPositive,
+];
+fields.nStarts.addit!.placeholder = "20"
+// #endregion N Starts
 
 export const ptrFields = buildFields(fields);

@@ -10,7 +10,7 @@ class PTRConfig:
     alfa3: float = 0.5e-7
     k3: float = 1.0
     r21: float = 1.0e-8
-    d_pump: float = 2.00e-3
+    d_pump: float = 0.40e-3
     Q: float = 1.0
     anisotropy: float = 1.94
     weight_exponent: float = 0

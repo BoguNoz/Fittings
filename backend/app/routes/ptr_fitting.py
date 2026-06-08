@@ -1,4 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, Form
+from joblib._multiprocessing_helpers import mp
 from pydantic import BaseModel
 from typing import List, Tuple
 import numpy as np
@@ -17,6 +18,7 @@ class PTRChartData(BaseModel):
 
 def format_for_echarts(x: np.ndarray, y: np.ndarray) -> List[Tuple[float, float]]:
     return np.column_stack((x, y)).tolist()
+
 
 
 @router.post("/ptr-fitting", response_model=PTRChartData)
@@ -52,6 +54,9 @@ async def ptr_fitting(
         r21=r21,
         phase_weight=weight,
     )
+
+    if __name__ == '__main__':
+        mp.set_start_method('spawn', force=True)
 
     result = (FittingProcessorBuilder()
               .load_dat_data(file_source=file)

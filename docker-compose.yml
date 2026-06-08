@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  backend:
+    build: ./backend
+    container_name: ptr-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./backend/data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    # command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload   # odkomentuj jeśli chcesz nadpisać
+
+  frontend:
+    build: ./frontend
+    container_name: ptr-frontend
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    depends_on:
+      - backend

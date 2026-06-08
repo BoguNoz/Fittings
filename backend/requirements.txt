@@ -10,6 +10,7 @@ fonttools==4.60.2
 h11==0.16.0
 idna==3.13
 importlib_resources==6.5.2
+joblib==1.5.3
 kiwisolver==1.4.7
 matplotlib==3.9.4
 np==1.0.2

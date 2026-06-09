@@ -6,24 +6,24 @@ from scipy.integrate import IntegrationWarning
 
 from app.processors.ptr_processors_builder import FittingProcessorBuilder
 from app.models.ptr_config import PTRConfig
-
+warnings.filterwarnings("ignore", category=IntegrationWarning)
 # ============================== KONFIGURACJA ==============================
 config = PTRConfig(
-    anisotropy=2.6,
-    l2=240e-9 * 0.8,
-    d_pump=0.9e-6
+    anisotropy=3.67,
+    l2=240e-9 * 0.9,
+    d_pump=1.8e-6
 )
 
 # ============================== GŁÓWNY KOD ==============================
 if __name__ == '__main__':
-    mp.set_start_method('spawn', force=True)   # musi być na samym początku main
+    mp.set_start_method('spawn', force=True)
     warnings.filterwarnings("ignore", category=IntegrationWarning)
     print("Starting PTR data processing...\n")
 
     result = (FittingProcessorBuilder()
-                .load_dat_file("data/PEDO-1.dat", sample_name="X32B")
+                .load_dat_file("data/PEDO-25.dat", sample_name="X32B")
                 .load_config(config)
-                .set_starting_point_count(20)
+                .set_starting_point_count(80)
                 .build()
                 .process())
 
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     print("           === RAPORT ===")
     print("="*45)
     print(f"Zadana anizotropia (sztywna)            : {result.anisotropy:.2f}")
-    print(f"Przewodnictwo cross-plane (k_cross)     : {result.k2:.4f} W/(m·K)")
+    print(f"Przewodnictwo cross-plane (k_cross)     : {result.k2:.10f} W/(m·K)")
     print(f"Dyfuzyjność cross-plane (alfa)          : {result.alfa2:.2e} m²/s")
     print(f"Rezystancja termiczna interfejsu (R_th) : {result.r32:.2e} m²·K/W")
     print("-" * 45)

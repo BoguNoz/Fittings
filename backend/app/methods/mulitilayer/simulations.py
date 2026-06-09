@@ -1,8 +1,10 @@
+import warnings
+
 import numpy as np
-from scipy.integrate import quad
+from scipy.integrate import quad, IntegrationWarning
 from app.methods.transfer_matrix import thermal_wavevector, layer_transfer_matrix, interface_matrix
 from app.models.ptr_config import PTRConfig
-
+warnings.filterwarnings("ignore", category=IntegrationWarning)
 
 def simulate_single_frequency(omega: float, k2: float, alfa2: float, r32: float, k3: float, config: PTRConfig,
                               anisotropy: float = 1.0) -> complex:

@@ -5,11 +5,10 @@ from functools import lru_cache
 
 from joblib import Parallel, delayed
 from scipy.optimize import least_squares
-from tqdm import tqdm
 
-from .simulations import simulate_single_frequency
-from ..models.ptr_config import PTRConfig
-from ..models.ptr_fit_result import PTRFitResult
+from app.methods.mulitilayer.simulations import simulate_single_frequency
+from app.models.ptr_config import PTRConfig
+from app.models.ptr_fit_result import PTRFitResult
 
 
 def calculate_r2(exp, model):

@@ -1,7 +1,5 @@
-import numpy as np
-
 from app.methods.corrections import correct_ptr_data
-from app.methods.fitting import fit_ptr_3d
+from app.methods.mulitilayer.fitting import fit_ptr_3d
 from app.models.ptr_config import PTRConfig
 from app.models.ptr_data import PTRData
 from app.models.ptr_fit_result import PTRFitResult

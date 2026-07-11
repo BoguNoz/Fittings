@@ -6,12 +6,51 @@ from scipy.integrate import IntegrationWarning
 
 from app.processors.ptr_processors_builder import FittingProcessorBuilder
 from app.models.ptr_config import PTRConfig
+
+import numpy as np
+
+def save_fit_to_dat(result, filename="fit_result.dat"):
+    """
+    Zapisuje wyniki fitowania do pliku DAT.
+
+    Kolumny:
+    Frequency[Hz]  ModelAmplitude  ModelPhase[deg]
+    """
+    data = np.column_stack([
+        result.frequency_hz,
+        result.model_amp,
+        result.model_phase_deg
+    ])
+
+    header = (
+        "Frequency_Hz\tModelAmplitude\tModelPhase_deg\n"
+        "# Generated from PTR fitting"
+    )
+
+    np.savetxt(
+        filename,
+        data,
+        fmt="%.10e",
+        delimiter="\t",
+        header=header,
+        comments=""
+    )
+
+    print(f"Fit saved to: {filename}")
+
 warnings.filterwarnings("ignore", category=IntegrationWarning)
 # ============================== KONFIGURACJA ==============================
 config = PTRConfig(
-    anisotropy=3.67,
-    l2=240e-9 * 0.9,
-    d_pump=1.8e-6
+    l1=50e-9,
+    k1=21.9,                # Ti
+    alfa1=9.4e-6,           # Ti
+    l2=300e-9,
+    alfa3=1.2e-5,           # szafir
+    k3=35.0,                # szafir
+    r21=6.1e-8,             # R_th z tabeli dla 0% Mg
+    d_pump=3.0e-3,          # poprawiona średnica plamki
+    Q=1.0,
+    anisotropy=4.0,         # przykładowo, jeśli H = k_perp/k_par, to anizotropia = 1/H
 )
 
 # ============================== GŁÓWNY KOD ==============================
@@ -21,9 +60,9 @@ if __name__ == '__main__':
     print("Starting PTR data processing...\n")
 
     result = (FittingProcessorBuilder()
-                .load_dat_file("data/PEDO-25.dat", sample_name="X32B")
+                .load_dat_file("data/PTR_Z150620Akwarc.dat", sample_name="X32B")
                 .load_config(config)
-                .set_starting_point_count(80)
+                .set_starting_point_count(10)
                 .build()
                 .process())
 
@@ -67,9 +106,12 @@ if __name__ == '__main__':
 
     plot_ptr_result(result)
 
+    save_fit_to_dat(result)
+
     # ============================== DIAGNOSTYKA ==============================
     print("=== DIAGNOSTYKA KOŃCOWA ===")
     print("Frequency range:", result.frequency_hz.min(), "–", result.frequency_hz.max())
     print(f"Phase at highest freq - Exp: {result.exp_phase_deg[-5:].mean():.2f}°")
     print(f"Phase at highest freq - Model: {result.model_phase_deg[-5:].mean():.2f}°")
     print("Successfully completed fitting and plotting.")
+

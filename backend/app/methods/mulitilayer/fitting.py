@@ -86,17 +86,37 @@ def ptr_residual(p, freq_hz, exp_amp, exp_phase_rad, config, fixed_aniso):
 
 
 def fit_ptr_3d(freq_hz, exp_amp, exp_phase_deg, config: PTRConfig,
-               n_starts=25, max_workers=None):
+               n_starts=25, max_workers=None, p0_expected=None):
     exp_phase_rad = np.deg2rad(exp_phase_deg)
     fixed_aniso = config.anisotropy
 
-    lb = np.array([np.log10(0.02), np.log10(1e-9), np.log10(1e-9), -10.0, -2 * np.pi])
-    ub = np.array([np.log10(1.0), np.log10(1e-4), np.log10(1e-6), 10.0, 2 * np.pi])
+    # lb = np.array([np.log10(0.02), np.log10(1e-9), np.log10(1e-9), -10.0, -2 * np.pi])
+    # ub = np.array([np.log10(1.0), np.log10(1e-4), np.log10(1e-6), 10.0, 2 * np.pi])
 
-    p0_expected = np.array([
-        np.log10(0.18), np.log10(1.3e-7), np.log10(1e-8),
-        np.log10(1e-5), np.deg2rad(-320)
+    lb = np.array([
+        np.log10(0.5),  # k2  [W/mK]  – minimum 0.5 (dla najgorszego przypadku)
+        np.log10(0.5e-6),  # alfa2 [m²/s] – minimum 0.5e-6 (fizyczna granica)
+        np.log10(1e-9),  # r32  [m²K/W]
+        -12.0,  # logA  – szeroki zakres
+        -2 * np.pi  # phi
     ])
+    ub = np.array([
+        np.log10(50.0),  # k2  – maksimum 50
+        np.log10(1e-4),  # alfa2 – maksimum 1e-4
+        np.log10(1e-6),  # r32
+        10.0,  # logA
+        2 * np.pi  # phi
+    ])
+
+    # p0_expected = np.array([
+    #     np.log10(0.18), np.log10(1.3e-7), np.log10(1e-8),
+    #     np.log10(1e-5), np.deg2rad(-320)
+    # ])
+
+    if p0_expected is None:
+        p0_expected = np.array([
+            np.log10(8.0), np.log10(3.5e-6), np.log10(6.1e-8), 0.0, 0.0
+        ])
 
     config_dict = dataclasses.asdict(config)
 
